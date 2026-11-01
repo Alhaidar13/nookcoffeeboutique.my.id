@@ -9,7 +9,7 @@
       "binding": "DB",
       "database_name": "webapp-production",
       // Ganti dengan ID asli dari `npx wrangler d1 create webapp-production` saat deploy produksi
-      "database_id": "00000000-0000-0000-0000-000000000000"
+      "database_id": "3b920424-0881-4d17-b330-a69b994f5f17"
     }
   ]
 }
