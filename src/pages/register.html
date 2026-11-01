@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register — LegalCraft</title>
+  <meta name="theme-color" content="#17517E" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%2317517E'/><path d='M20 16h14l10 10v22H20z' fill='white'/><path d='M26 36l5 5 9-10' stroke='%2317517E' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css" rel="stylesheet" />
+  <link href="/static/style.css?v=7" rel="stylesheet" />
+  <link href="/static/auth.css?v=7" rel="stylesheet" />
+</head>
+<body class="app-body" data-page="register">
+  <div class="auth-wrap">
+    <aside class="auth-side">
+      <span class="blob blob-1" aria-hidden="true"></span>
+      <a href="/" class="brand" style="position:relative">
+        <span class="brand-mark"><i class="fa-solid fa-file-signature"></i></span>
+        <span class="brand-name">Legal<span>Craft</span></span>
+      </a>
+      <div style="position:relative">
+        <h2>Buat akun LegalCraft</h2>
+        <p>Daftar sekali, lalu konsultasi dan pesan pengurusan NPWP, NIB, dan PT Perorangan dengan mudah.</p>
+        <ul>
+          <li><i class="fa-solid fa-circle-check"></i> Daftar cepat dengan Google</li>
+          <li><i class="fa-solid fa-circle-check"></i> Harga promo mulai Rp149.000</li>
+          <li><i class="fa-solid fa-circle-check"></i> Data kamu aman &amp; terenkripsi</li>
+        </ul>
+      </div>
+      <small style="position:relative;color:rgba(255,255,255,.7)">© 2026 LegalCraft</small>
+    </aside>
+
+    <main class="auth-main">
+      <div class="auth-card">
+        <a href="/" class="back"><i class="fa-solid fa-arrow-left"></i> Kembali</a>
+        <h1>Register</h1>
+        <p class="sub" id="reg-sub">Daftar dengan Google atau isi data di bawah.</p>
+
+        <div class="auth-alert" id="alert" role="alert" hidden></div>
+
+        <!-- Mode Google: profil dari akun Google -->
+        <div class="g-profile" id="g-profile" hidden>
+          <span id="g-avatar"></span>
+          <div><strong id="g-name"></strong><small id="g-email"></small></div>
+          <button type="button" class="x" id="g-cancel">Ganti</button>
+        </div>
+
+        <div id="google-area">
+          <div class="google-slot" id="google-slot"></div>
+          <p class="google-hint" id="google-hint" hidden></p>
+          <div class="divider" style="margin-top:16px">atau daftar dengan email</div>
+        </div>
+
+        <form class="auth-form" id="register-form" novalidate>
+          <div class="form-group">
+            <label for="r-name">Nama Lengkap <span class="req">*</span></label>
+            <input type="text" id="r-name" name="name" placeholder="Nama sesuai KTP" autocomplete="name" />
+            <small class="error-msg" data-error-for="name"></small>
+          </div>
+          <div class="form-group" data-email-only>
+            <label for="r-email">Email <span class="req">*</span></label>
+            <input type="email" id="r-email" name="email" placeholder="nama@email.com" autocomplete="email" />
+            <small class="error-msg" data-error-for="email"></small>
+          </div>
+          <div class="form-group">
+            <label for="r-phone">Nomor WhatsApp <span class="req">*</span></label>
+            <input type="tel" id="r-phone" name="phone" placeholder="08xxxxxxxxxx" inputmode="tel" autocomplete="tel" />
+            <small class="error-msg" data-error-for="phone"></small>
+          </div>
+          <div class="form-group" data-email-only>
+            <label for="r-password">Password <span class="req">*</span></label>
+            <div class="pw-wrap">
+              <input type="password" id="r-password" name="password" placeholder="Minimal 8 karakter" autocomplete="new-password" />
+              <button type="button" class="pw-toggle" aria-label="Tampilkan password"><i class="fa-solid fa-eye"></i></button>
+            </div>
+            <small class="error-msg" data-error-for="password"></small>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg" id="submit-btn"><i class="fa-solid fa-user-plus"></i> Buat Akun</button>
+          <p class="terms">Dengan mendaftar, kamu menyetujui penggunaan data hanya untuk keperluan pengurusan legalitas.</p>
+        </form>
+
+        <p class="auth-switch">Sudah punya akun? <a href="/login">Login</a></p>
+      </div>
+    </main>
+  </div>
+
+  <div class="auth-success" id="auth-success" hidden>
+    <div class="box">
+      <svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/><path d="M14 27l8 8 16-17"/></svg>
+      <strong id="success-title">Akun berhasil dibuat!</strong>
+      <small>Mengarahkan ke beranda…</small>
+    </div>
+  </div>
+
+  <script src="/static/auth.js?v=7"></script>
+
+</body>
+</html>

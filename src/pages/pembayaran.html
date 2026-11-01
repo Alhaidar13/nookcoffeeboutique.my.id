@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pembayaran — LegalCraft</title>
+  <meta name="theme-color" content="#17517E" />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%2317517E'/><path d='M20 16h14l10 10v22H20z' fill='white'/><path d='M26 36l5 5 9-10' stroke='%2317517E' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css" rel="stylesheet" />
+  <link href="/static/style.css?v=7" rel="stylesheet" />
+  <link href="/static/payment.css?v=7" rel="stylesheet" />
+</head>
+<body class="pay-body">
+
+  <header class="site-header scrolled">
+    <nav class="navbar container" aria-label="Navigasi">
+      <a href="/beranda" class="brand" aria-label="LegalCraft - Beranda">
+        <span class="brand-mark"><i class="fa-solid fa-file-signature"></i></span>
+        <span class="brand-name">Legal<span>Craft</span></span>
+      </a>
+      <div style="display:flex;gap:8px">
+                <a href="/beranda#harga" class="btn btn-outline btn-sm"><i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="pay-main container">
+    <!-- Stepper -->
+    <ol class="pay-stepper" id="pay-stepper" aria-label="Langkah pembayaran">
+      <li class="active" data-step="1"><span>1</span> Data &amp; Metode</li>
+      <li data-step="2"><span>2</span> Bayar</li>
+      <li data-step="3"><span>3</span> Verifikasi</li>
+      <li data-step="4"><span>4</span> Selesai</li>
+    </ol>
+
+    <div class="pay-grid">
+      <!-- ============ KOLOM KIRI ============ -->
+      <section class="pay-panel" id="pay-panel">
+
+        <!-- STEP 1: data pembeli + pilih metode -->
+        <form id="step-1" class="pay-step" novalidate>
+          <h1 class="pay-title">Pilih Metode Pembayaran</h1>
+          <p class="pay-sub">Lengkapi data singkat lalu pilih metode pembayaran yang kamu inginkan.</p>
+
+          <div class="form-group">
+            <label for="p-service">Layanan <span class="req">*</span></label>
+            <select id="p-service" name="service"></select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="p-name">Nama Lengkap <span class="req">*</span></label>
+              <input type="text" id="p-name" name="name" placeholder="Nama sesuai KTP" autocomplete="name" />
+              <small class="error-msg" data-error-for="name"></small>
+            </div>
+            <div class="form-group">
+              <label for="p-phone">Nomor WhatsApp <span class="req">*</span></label>
+              <input type="tel" id="p-phone" name="phone" placeholder="08xxxxxxxxxx" inputmode="tel" autocomplete="tel" />
+              <small class="error-msg" data-error-for="phone"></small>
+            </div>
+          </div>
+
+          <fieldset class="method-group">
+            <legend>Metode Pembayaran <span class="req">*</span></legend>
+
+            <p class="method-cat"><i class="fa-solid fa-building-columns"></i> Virtual Account / Transfer Bank</p>
+            <label class="method-card">
+              <input type="radio" name="method" value="bsi" />
+              <span class="method-logo"><img src="/static/img/bsi.png" alt="Bank Syariah Indonesia (BSI)" /></span>
+              <span class="method-info"><strong>BSI Virtual Account</strong><small>Bank Syariah Indonesia • Verifikasi otomatis</small></span>
+              <span class="method-radio" aria-hidden="true"></span>
+            </label>
+
+            <p class="method-cat"><i class="fa-solid fa-wallet"></i> E-Wallet</p>
+            <label class="method-card">
+              <input type="radio" name="method" value="gopay" />
+              <span class="method-logo"><img src="/static/img/gopay.png" alt="GoPay" /></span>
+              <span class="method-info"><strong>GoPay</strong><small>Transfer saldo GoPay • Verifikasi otomatis</small></span>
+              <span class="method-radio" aria-hidden="true"></span>
+            </label>
+            <small class="error-msg" data-error-for="method"></small>
+          </fieldset>
+
+          <p class="form-error" id="step1-error" hidden></p>
+          <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-create">
+            <i class="fa-solid fa-lock"></i> Lanjut Bayar
+          </button>
+          <p class="form-note"><i class="fa-solid fa-shield-halved"></i> Tagihan berlaku 10 menit setelah dibuat.</p>
+        </form>
+
+        <!-- STEP 2: instruksi bayar -->
+        <div id="step-2" class="pay-step" hidden>
+          <div class="timer-box" id="timer-box">
+            <div>
+              <small>Selesaikan pembayaran dalam</small>
+              <strong id="timer">10:00</strong>
+            </div>
+            <div class="timer-ring" aria-hidden="true">
+              <svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="19" class="ring-bg"/><circle cx="22" cy="22" r="19" class="ring-fg" id="timer-ring"/></svg>
+              <i class="fa-solid fa-hourglass-half"></i>
+            </div>
+          </div>
+          <p class="timer-deadline">Batas waktu: <span id="deadline-text">-</span></p>
+
+          <div class="va-card" id="va-card">
+            <div class="va-head">
+              <img id="va-logo" src="/static/img/bsi.png" alt="" />
+              <div>
+                <strong id="va-title">BSI Virtual Account</strong>
+                <small id="va-sub">Bank Syariah Indonesia</small>
+              </div>
+            </div>
+            <div class="va-row">
+              <div>
+                <small id="va-label">Nomor Virtual Account</small>
+                <strong class="va-number" id="va-number">-</strong>
+              </div>
+              <button type="button" class="copy-btn" data-copy-target="va-number"><i class="fa-regular fa-copy"></i> Salin</button>
+            </div>
+            <div class="va-row">
+              <div>
+                <small>Total Pembayaran</small>
+                <strong class="va-amount" id="va-amount">-</strong>
+              </div>
+              <button type="button" class="copy-btn" data-copy-raw="" id="copy-amount"><i class="fa-regular fa-copy"></i> Salin</button>
+            </div>
+            <div class="va-breakdown">
+              <div><span>Harga layanan</span><b id="va-base">-</b></div>
+              <div><span>Kode unik verifikasi <i class="fa-solid fa-circle-info" title="Kode unik membuat transfer kamu bisa dikenali sistem secara otomatis"></i></span><b id="va-code">-</b></div>
+            </div>
+            <p class="va-warn"><i class="fa-solid fa-circle-exclamation"></i> Transfer <b>TEPAT sampai 3 digit terakhir</b> (termasuk kode unik). Nominal ini yang dipakai sistem untuk mengonfirmasi pembayaranmu <b>secara otomatis</b>.</p>
+          </div>
+
+          <!-- Cara pembayaran -->
+          <div class="howto">
+            <h2><i class="fa-solid fa-circle-question"></i> Cara Pembayaran</h2>
+            <div class="howto-list" id="howto-list"></div>
+          </div>
+
+          <div class="step2-actions" id="step2-actions">
+            <button type="button" class="btn btn-primary btn-block btn-lg" id="btn-paid">
+              <i class="fa-solid fa-circle-check"></i> Saya Sudah Bayar
+            </button>
+            <button type="button" class="btn btn-link" id="btn-change">Ganti metode / batalkan</button>
+          </div>
+        </div>
+
+        <!-- STEP 3: menunggu konfirmasi (verifikasi otomatis) -->
+        <div id="step-3" class="pay-step pay-wait" hidden>
+          <div class="wait-anim" aria-hidden="true">
+            <span class="wait-pulse"></span><span class="wait-pulse p2"></span>
+            <span class="wait-core"><i class="fa-solid fa-magnifying-glass-dollar"></i></span>
+          </div>
+          <span class="wait-badge"><span class="dot"></span> Menunggu Konfirmasi</span>
+          <h1 class="pay-title">Pembayaran Sedang Diverifikasi</h1>
+          <p class="pay-sub">Sistem kami sedang mengecek dana masuk ke rekening LegalCraft. <b>Tidak perlu menunggu admin</b> — begitu dana kamu masuk, status akan otomatis berubah menjadi <b>Pembayaran Berhasil</b>.</p>
+
+          <div class="wait-card">
+            <div><span>ID Transaksi</span><b id="w-id">-</b></div>
+            <div><span>Metode</span><b id="w-method">-</b></div>
+            <div><span>Nominal yang dicek</span><b id="w-amount" class="w-amount">-</b></div>
+            <div><span>Dikonfirmasi pada</span><b id="w-time">-</b></div>
+              <div><span>Batas verifikasi</span><b id="w-deadline" class="w-deadline">-</b></div>
+          </div>
+
+          <ol class="wait-steps">
+            <li class="done"><i class="fa-solid fa-check"></i> Tagihan dibuat</li>
+            <li class="done"><i class="fa-solid fa-check"></i> Kamu mengonfirmasi sudah transfer</li>
+            <li class="active"><span class="spinner sm"></span> Menunggu dana masuk ke rekening</li>
+            <li><i class="fa-regular fa-circle"></i> Dana masuk → berhasil &bull; Dana tidak masuk → ditolak otomatis</li>
+          </ol>
+
+          <p class="wait-check"><i class="fa-solid fa-rotate"></i> Cek otomatis setiap 5 detik • terakhir dicek <span id="w-last">-</span></p>
+          <p class="wait-hint"><i class="fa-solid fa-circle-info"></i> Jika dana dengan nominal yang tepat <b>tidak masuk</b> hingga batas waktu verifikasi, sistem akan <b>otomatis menolak</b> pembayaran ini.</p>
+
+          <div class="wait-actions">
+            <button type="button" class="btn btn-outline btn-block" id="btn-check-now"><i class="fa-solid fa-arrows-rotate"></i> Cek Status Sekarang</button>
+            <a href="#" target="_blank" rel="noopener" class="btn btn-link" id="btn-wait-help"><i class="fa-brands fa-whatsapp"></i> Butuh bantuan? Hubungi admin</a>
+          </div>
+
+          <div class="sim-box" id="sim-box" hidden>
+            <p><i class="fa-solid fa-flask"></i> <b>Mode Demo</b> — belum terhubung ke mutasi rekening asli. Klik tombol di bawah untuk mensimulasikan dana masuk / tidak masuk.</p>
+            <button type="button" class="btn btn-primary btn-block" id="btn-simulate"><i class="fa-solid fa-money-bill-transfer"></i> Simulasikan Dana Masuk</button>
+              <button type="button" class="btn btn-outline btn-block" id="btn-simulate-reject"><i class="fa-solid fa-ban"></i> Simulasikan Dana Tidak Masuk</button>
+          </div>
+        </div>
+
+        <!-- STEP 4: ringkasan setelah selesai -->
+        <div id="step-4" class="pay-step pay-done" hidden>
+          <span class="done-icon"><i class="fa-solid fa-circle-check"></i></span>
+          <h1 class="pay-title">Pembayaran Berhasil</h1>
+          <p class="pay-sub">Dana kamu sudah kami terima dan terverifikasi otomatis oleh sistem. Pesanan langsung masuk antrean proses — admin akan menghubungi kamu via WhatsApp.</p>
+          <div class="done-actions">
+            <button type="button" class="btn btn-primary btn-lg" id="btn-show-receipt"><i class="fa-solid fa-receipt"></i> Lihat Struk</button>
+            <a href="/beranda" class="btn btn-outline btn-lg"><i class="fa-solid fa-house"></i> Kembali ke Beranda</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ KOLOM KANAN: ringkasan ============ -->
+      <aside class="pay-summary" id="pay-summary">
+        <h2>Ringkasan Pesanan</h2>
+        <div class="sum-service">
+          <span class="sum-icon"><i class="fa-solid fa-file-contract" id="sum-icon"></i></span>
+          <div>
+            <strong id="sum-name">-</strong>
+            <small>Jasa pengurusan legalitas</small>
+          </div>
+        </div>
+        <dl class="sum-rows">
+          <div><dt>Harga normal</dt><dd class="sum-old" id="sum-old">-</dd></div>
+          <div><dt>Diskon promo</dt><dd class="sum-disc" id="sum-disc">-</dd></div>
+          <div><dt>Biaya admin</dt><dd class="sum-free">Gratis</dd></div>
+          <div class="sum-total"><dt>Total bayar</dt><dd id="sum-total">-</dd></div>
+        </dl>
+        <p class="sum-order" id="sum-order" hidden>No. Pesanan: <b id="sum-order-id"></b></p>
+        <ul class="sum-trust">
+          <li><i class="fa-solid fa-bolt"></i> Verifikasi pembayaran otomatis, tanpa tunggu admin</li>
+          <li><i class="fa-solid fa-receipt"></i> Struk langsung keluar setelah dana masuk</li>
+          <li><i class="fa-solid fa-headset"></i> Bantuan via WhatsApp 09.00–22.00 WIB</li>
+          <li><i class="fa-solid fa-rotate-left"></i> Garansi revisi data gratis</li>
+        </ul>
+      </aside>
+    </div>
+  </main>
+
+  <!-- ============ POPUP: BERHASIL (struk ala GoPay) ============ -->
+  <div class="pop" id="pop-success" role="dialog" aria-modal="true" aria-labelledby="success-title" hidden>
+    <div class="pop-overlay"></div>
+    <div class="confetti" id="confetti" aria-hidden="true"></div>
+    <div class="pop-dialog receipt-dialog">
+      <button type="button" class="pop-close" data-close-pop aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
+      <div class="receipt" id="receipt">
+        <div class="receipt-head">
+          <div class="receipt-brand"><img id="rc-logo" src="/static/img/gopay.png" alt="" /></div>
+          <div class="check-anim" aria-hidden="true">
+            <svg viewBox="0 0 52 52"><circle class="check-circle" cx="26" cy="26" r="24"/><path class="check-path" d="M14 27l8 8 16-17"/></svg>
+          </div>
+          <h2 id="success-title">Pembayaran Berhasil</h2>
+          <p class="receipt-amount" id="rc-amount">Rp0</p>
+          <p class="receipt-date" id="rc-date">-</p>
+        </div>
+        <div class="receipt-tear" aria-hidden="true"></div>
+        <dl class="receipt-body">
+          <div><dt>Status</dt><dd><span class="status-pill">Berhasil • Terverifikasi</span></dd></div>
+          <div><dt>Penerima</dt><dd>LegalCraft</dd></div>
+          <div><dt>Layanan</dt><dd id="rc-service">-</dd></div>
+          <div><dt>Metode</dt><dd id="rc-method">-</dd></div>
+          <div><dt>No. Tujuan</dt><dd id="rc-account">-</dd></div>
+          <div><dt>Nama Pembeli</dt><dd id="rc-customer">-</dd></div>
+          <div><dt>Harga Normal</dt><dd class="sum-old" id="rc-old">-</dd></div>
+          <div><dt>Diskon</dt><dd class="sum-disc" id="rc-disc">-</dd></div>
+          <div class="rc-total"><dt>Total</dt><dd id="rc-total">-</dd></div>
+          <div class="rc-id"><dt>ID Transaksi</dt><dd id="rc-id">-</dd></div>
+        </dl>
+        <p class="receipt-foot"><i class="fa-solid fa-shield-halved"></i> Pembayaran terverifikasi otomatis oleh sistem LegalCraft</p>
+      </div>
+
+      <div class="receipt-instruction">
+        <p><i class="fa-solid fa-circle-check"></i> <b>Pesanan sudah diproses otomatis.</b> Klik tombol WhatsApp di bawah untuk mulai mengirim dokumen persyaratan ke admin <b>+62 877-9789-0306</b>.</p>
+      </div>
+      <div class="receipt-actions">
+        <button type="button" class="btn btn-outline btn-block" id="btn-download"><i class="fa-solid fa-download"></i> Unduh Struk</button>
+        <a href="#" target="_blank" rel="noopener" class="btn btn-wa btn-block" id="btn-wa"><i class="fa-brands fa-whatsapp"></i> Mulai Proses via WA</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ POPUP: GAGAL ============ -->
+  <div class="pop" id="pop-failed" role="dialog" aria-modal="true" aria-labelledby="failed-title" hidden>
+    <div class="pop-overlay"></div>
+    <div class="pop-dialog failed-dialog">
+      <div class="x-anim" aria-hidden="true">
+        <svg viewBox="0 0 52 52"><circle class="x-circle" cx="26" cy="26" r="24"/><path class="x-path x1" d="M17 17l18 18"/><path class="x-path x2" d="M35 17L17 35"/></svg>
+      </div>
+      <h2 id="failed-title">Pembayaran Gagal</h2>
+      <p id="failed-text">Waktu pembayaran telah habis. Silakan buat tagihan baru.</p>
+      <div class="failed-meta" id="failed-meta"></div>
+      <div class="failed-actions">
+        <button type="button" class="btn btn-primary btn-block btn-lg" id="btn-retry"><i class="fa-solid fa-rotate-right"></i> Coba Lagi</button>
+        <a href="https://wa.me/6287797890306" target="_blank" rel="noopener" class="btn btn-outline btn-block" id="btn-help"><i class="fa-brands fa-whatsapp"></i> Hubungi LegalCraft</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
+  <script src="/static/payment.js?v=7"></script>
+
+</body>
+</html>

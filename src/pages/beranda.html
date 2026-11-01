@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LegalCraft — Legalitas Usaha, Lebih Mudah.</title>
+  <meta name="description" content="LegalCraft membantu pengurusan NPWP, NIB, dan PT Perorangan secara praktis. Konsultasi langsung via WhatsApp." />
+  <meta name="theme-color" content="#17517E" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%2317517E'/><path d='M20 16h14l10 10v22H20z' fill='white'/><path d='M26 36l5 5 9-10' stroke='%2317517E' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css" rel="stylesheet" />
+  <link href="/static/style.css?v=7" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ================= NAVBAR ================= -->
+  <header class="site-header" id="site-header">
+    <nav class="navbar container" aria-label="Navigasi utama">
+      <a href="#beranda" class="brand" aria-label="LegalCraft - Beranda">
+        <span class="brand-mark"><i class="fa-solid fa-file-signature"></i></span>
+        <span class="brand-name">Legal<span>Craft</span></span>
+      </a>
+
+      <ul class="nav-menu" id="nav-menu">
+        <li><a href="#beranda" class="nav-link active">Beranda</a></li>
+        <li><a href="#layanan" class="nav-link">Layanan</a></li>
+        <li><a href="#cara-kerja" class="nav-link">Cara Kerja</a></li>
+        <li><a href="#harga" class="nav-link" data-require-auth="harga">Price List</a></li>
+        <li><a href="#testimonial" class="nav-link">Testimonial</a></li>
+        <li><a href="#faq" class="nav-link">FAQ</a></li>
+        <li class="nav-menu-cta">
+          <button type="button" class="btn btn-primary btn-block" data-open-consult>
+            <i class="fa-brands fa-whatsapp"></i> Konsultasi
+          </button>
+        </li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="/login" class="btn btn-outline btn-sm nav-auth" id="nav-auth"><i class="fa-solid fa-right-to-bracket"></i> Masuk</a>
+        <button type="button" class="btn btn-primary btn-sm nav-cta" data-open-consult>Konsultasi</button>
+        <button type="button" class="hamburger" id="hamburger" aria-label="Buka menu" aria-expanded="false" aria-controls="nav-menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ================= HERO ================= -->
+    <section class="hero" id="beranda">
+      <div class="hero-bg" aria-hidden="true">
+        <span class="blob blob-1"></span>
+        <span class="blob blob-2"></span>
+        <span class="grid-pattern"></span>
+      </div>
+
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <span class="eyebrow eyebrow-light"><i class="fa-solid fa-shield-halved"></i> Legalitas Usaha, Lebih Mudah.</span>
+          <h1 class="hero-title">Urus Legalitas Usaha, Jadi Lebih Mudah.</h1>
+          <p class="hero-subtitle">
+            Mulai dari NPWP, NIB, hingga PT Perorangan. LegalCraft membantu kamu memahami dan menjalani proses pengurusan legalitas usaha dengan lebih praktis.
+          </p>
+          <div class="hero-actions">
+            <button type="button" class="btn btn-white btn-lg" data-open-consult>
+              <i class="fa-brands fa-whatsapp"></i> Konsultasi Sekarang
+            </button>
+            <a href="#layanan" class="btn btn-ghost-light btn-lg">
+              Lihat Layanan <i class="fa-solid fa-arrow-down"></i>
+            </a>
+          </div>
+          <ul class="hero-points">
+            <li><i class="fa-solid fa-circle-check"></i> Harga jelas sejak awal</li>
+            <li><i class="fa-solid fa-circle-check"></i> Pendampingan via WhatsApp</li>
+            <li><i class="fa-solid fa-circle-check"></i> Proses mudah dipahami</li>
+          </ul>
+        </div>
+
+        <!-- Ilustrasi dokumen legalitas -->
+        <div class="hero-visual" aria-hidden="true">
+          <div class="doc-stack">
+            <div class="doc-sheet doc-back"></div>
+            <div class="doc-sheet doc-main">
+              <div class="doc-head">
+                <span class="doc-icon"><i class="fa-solid fa-file-contract"></i></span>
+                <div>
+                  <strong>Dokumen Legalitas</strong>
+                  <small>Ringkasan pengurusan</small>
+                </div>
+              </div>
+              <div class="doc-lines">
+                <span style="width:92%"></span>
+                <span style="width:78%"></span>
+                <span style="width:86%"></span>
+                <span style="width:60%"></span>
+              </div>
+              <div class="doc-progress">
+                <div class="doc-progress-label"><span>Kelengkapan</span><span>3/3</span></div>
+                <div class="doc-progress-bar"><span></span></div>
+              </div>
+              <div class="doc-stamp"><i class="fa-solid fa-check"></i></div>
+            </div>
+          </div>
+
+          <div class="float-card card-npwp">
+            <span class="fc-icon"><i class="fa-solid fa-id-card"></i></span>
+            <div><strong>NPWP</strong><small data-price="npwp">Rp150.000</small></div>
+          </div>
+          <div class="float-card card-nib">
+            <span class="fc-icon"><i class="fa-solid fa-barcode"></i></span>
+            <div><strong>NIB</strong><small data-price="nib">Rp150.000</small></div>
+          </div>
+          <div class="float-card card-pt">
+            <span class="fc-icon"><i class="fa-solid fa-building"></i></span>
+            <div><strong>PT Perorangan</strong><small data-price="pt">Rp200.000</small></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= LAYANAN ================= -->
+    <section class="section" id="layanan">
+      <div class="container">
+        <header class="section-head">
+          <span class="eyebrow">Layanan Kami</span>
+          <h2 class="section-title">Layanan Legalitas untuk Kebutuhanmu</h2>
+          <p class="section-subtitle">Pilih layanan yang sesuai, konsultasikan kebutuhanmu, dan kami bantu prosesnya dengan informasi yang jelas.</p>
+        </header>
+
+        <div class="cards-grid">
+          <article class="service-card">
+            <span class="service-icon"><i class="fa-solid fa-id-card"></i></span>
+            <h3 class="card-title">Pengurusan NPWP</h3>
+            <p>Bantuan pengurusan NPWP sesuai kebutuhan wajib pajak dengan informasi persyaratan yang mudah dipahami.</p>
+            <button type="button" class="benefit-toggle" aria-expanded="false" aria-controls="benefit-npwp">
+              <span><i class="fa-solid fa-gift"></i> Lihat Benefit</span><i class="fa-solid fa-chevron-down benefit-chevron"></i>
+            </button>
+            <div class="benefit-panel" id="benefit-npwp">
+              <ul class="benefit-list"><li><i class="fa-solid fa-circle-check"></i> NPWP terbit resmi dari DJP</li><li><i class="fa-solid fa-circle-check"></i> Kartu NPWP digital (PDF)</li><li><i class="fa-solid fa-circle-check"></i> Konsultasi persyaratan gratis</li><li><i class="fa-solid fa-circle-check"></i> Pengecekan data sebelum diajukan</li><li><i class="fa-solid fa-circle-check"></i> Update progres via WhatsApp</li></ul>
+            </div>
+          </article>
+
+          <article class="service-card">
+            <span class="service-icon"><i class="fa-solid fa-barcode"></i></span>
+            <h3 class="card-title">Pengurusan NIB</h3>
+            <p>Bantuan pengurusan Nomor Induk Berusaha untuk kamu yang ingin melengkapi kebutuhan legalitas usaha.</p>
+            <button type="button" class="benefit-toggle" aria-expanded="false" aria-controls="benefit-nib">
+              <span><i class="fa-solid fa-gift"></i> Lihat Benefit</span><i class="fa-solid fa-chevron-down benefit-chevron"></i>
+            </button>
+            <div class="benefit-panel" id="benefit-nib">
+              <ul class="benefit-list"><li><i class="fa-solid fa-circle-check"></i> NIB resmi terbit via OSS RBA</li><li><i class="fa-solid fa-circle-check"></i> Penentuan KBLI yang tepat</li><li><i class="fa-solid fa-circle-check"></i> Sertifikat standar / izin dasar</li><li><i class="fa-solid fa-circle-check"></i> Bisa untuk daftar marketplace & bank</li><li><i class="fa-solid fa-circle-check"></i> Update progres via WhatsApp</li></ul>
+            </div>
+          </article>
+
+          <article class="service-card">
+            <span class="service-icon"><i class="fa-solid fa-building"></i></span>
+            <h3 class="card-title">Pendirian PT Perorangan</h3>
+            <p>Bantuan pengurusan pendirian PT Perorangan untuk pengusaha yang ingin membangun usaha dengan bentuk badan usaha yang sesuai.</p>
+            <button type="button" class="benefit-toggle" aria-expanded="false" aria-controls="benefit-pt">
+              <span><i class="fa-solid fa-gift"></i> Lihat Benefit</span><i class="fa-solid fa-chevron-down benefit-chevron"></i>
+            </button>
+            <div class="benefit-panel" id="benefit-pt">
+              <ul class="benefit-list"><li><i class="fa-solid fa-circle-check"></i> Nama PT dicek & dipesan</li><li><i class="fa-solid fa-circle-check"></i> Sertifikat Pendaftaran PT dari Kemenkumham</li><li><i class="fa-solid fa-circle-check"></i> NPWP Badan & NIB perusahaan</li><li><i class="fa-solid fa-circle-check"></i> Pendampingan penuh sampai terbit</li><li><i class="fa-solid fa-circle-check"></i> Update progres via WhatsApp</li></ul>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CARA KERJA ================= -->
+    <section class="section section-alt" id="cara-kerja">
+      <div class="container">
+        <header class="section-head">
+          <span class="eyebrow">Cara Kerja</span>
+          <h2 class="section-title">4 Langkah Mudah Bersama LegalCraft</h2>
+          <p class="section-subtitle">Proses dibuat sederhana agar kamu bisa fokus menjalankan usaha.</p>
+        </header>
+
+        <ol class="steps">
+          <li class="step">
+            <span class="step-num">01</span>
+            <span class="step-icon"><i class="fa-solid fa-pen-to-square"></i></span>
+            <h3 class="card-title">Isi Form Konsultasi</h3>
+            <p>Isi data singkat dan pilih layanan yang kamu butuhkan.</p>
+          </li>
+          <li class="step">
+            <span class="step-num">02</span>
+            <span class="step-icon"><i class="fa-brands fa-whatsapp"></i></span>
+            <h3 class="card-title">Konsultasi via WhatsApp</h3>
+            <p>Admin menjelaskan persyaratan dan alur pengurusan.</p>
+          </li>
+          <li class="step">
+            <span class="step-num">03</span>
+            <span class="step-icon"><i class="fa-solid fa-folder-open"></i></span>
+            <h3 class="card-title">Lengkapi Dokumen</h3>
+            <p>Kirim dokumen yang diperlukan sesuai arahan admin.</p>
+          </li>
+          <li class="step">
+            <span class="step-num">04</span>
+            <span class="step-icon"><i class="fa-solid fa-circle-check"></i></span>
+            <h3 class="card-title">Proses &amp; Selesai</h3>
+            <p>Kami bantu proses pengajuan hingga dokumen diterbitkan instansi terkait.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ================= WHY LEGALCRAFT ================= -->
+    <section class="section" id="tentang">
+      <div class="container why-grid">
+        <div class="why-content">
+          <span class="eyebrow">Kenapa LegalCraft</span>
+          <h2 class="section-title text-left">Pendamping Legalitas yang Praktis &amp; Transparan</h2>
+          <p class="section-subtitle text-left">LegalCraft adalah penyedia jasa bantuan pengurusan legalitas usaha untuk individu, freelancer, UMKM, pemilik bisnis online, hingga calon pemilik PT Perorangan.</p>
+          <button type="button" class="btn btn-primary btn-lg" data-open-consult>
+            <i class="fa-brands fa-whatsapp"></i> Konsultasi Sekarang
+          </button>
+        </div>
+        <ul class="why-list">
+          <li class="why-item">
+            <span class="why-icon"><i class="fa-solid fa-tags"></i></span>
+            <div><h3 class="card-title">Harga Transparan</h3><p>Biaya layanan jelas sejak awal, tanpa biaya tersembunyi.</p></div>
+          </li>
+          <li class="why-item">
+            <span class="why-icon"><i class="fa-solid fa-comments"></i></span>
+            <div><h3 class="card-title">Konsultasi Responsif</h3><p>Tanya jawab langsung lewat WhatsApp setiap hari.</p></div>
+          </li>
+          <li class="why-item">
+            <span class="why-icon"><i class="fa-solid fa-book-open"></i></span>
+            <div><h3 class="card-title">Mudah Dipahami</h3><p>Persyaratan dan alur dijelaskan dengan bahasa sederhana.</p></div>
+          </li>
+          <li class="why-item">
+            <span class="why-icon"><i class="fa-solid fa-user-shield"></i></span>
+            <div><h3 class="card-title">Data Terjaga</h3><p>Data kamu hanya digunakan untuk keperluan pengurusan.</p></div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================= PRICING ================= -->
+    <section class="section section-alt" id="harga">
+      <div class="container">
+        <header class="section-head">
+          <span class="eyebrow">Harga Layanan</span>
+          <h2 class="section-title">Harga Jelas, Tanpa Ribet</h2>
+          <p class="section-subtitle">Harga promo terbatas — bayar langsung via BSI atau GoPay, proses segera dimulai.</p>
+          <div class="promo-strip"><i class="fa-solid fa-bolt"></i> Promo berakhir dalam <strong id="promo-countdown">--:--:--</strong></div>
+        </header>
+
+        <div class="price-lock-wrap">
+        <div class="price-lock" id="price-lock">
+          <span class="price-lock-icon"><i class="fa-solid fa-lock"></i></span>
+          <h3>Login untuk Melihat Price List</h3>
+          <p>Masuk atau daftar akun gratis untuk melihat harga promo lengkap dan melakukan pembayaran.</p>
+          <a href="#harga" class="btn btn-primary btn-lg" data-require-auth="harga"><i class="fa-solid fa-right-to-bracket"></i> Login / Daftar</a>
+        </div>
+        <div class="cards-grid">
+          <article class="price-card">
+            <span class="price-badge"><i class="fa-solid fa-fire"></i> Promo</span>
+            <h3 class="card-title">Pengurusan NPWP</h3>
+            <div class="price-wrap">
+              <span class="price-old" data-price-old="npwp"></span>
+              <span class="price-discount" data-discount="npwp"></span>
+            </div>
+            <p class="price-value" data-price="npwp"></p>
+            <ul class="price-features"><li><i class="fa-solid fa-check"></i> Konsultasi persyaratan gratis</li><li><i class="fa-solid fa-check"></i> Pengecekan & verifikasi data</li><li><i class="fa-solid fa-check"></i> Pendaftaran NPWP ke DJP</li><li><i class="fa-solid fa-check"></i> Kartu NPWP digital (PDF)</li><li><i class="fa-solid fa-check"></i> Aktivasi akun DJP Online</li><li><i class="fa-solid fa-check"></i> Panduan lapor SPT tahunan</li><li><i class="fa-solid fa-check"></i> Update progres via WhatsApp</li><li><i class="fa-solid fa-check"></i> Garansi revisi data gratis</li></ul>
+            <a href="/pembayaran?layanan=npwp" class="btn btn-outline btn-block btn-lg btn-pay" data-require-auth="pay"><i class="fa-solid fa-credit-card"></i> Bayar Sekarang</a>
+          </article>
+
+          <article class="price-card">
+            <span class="price-badge"><i class="fa-solid fa-fire"></i> Promo</span>
+            <h3 class="card-title">Pengurusan NIB</h3>
+            <div class="price-wrap">
+              <span class="price-old" data-price-old="nib"></span>
+              <span class="price-discount" data-discount="nib"></span>
+            </div>
+            <p class="price-value" data-price="nib"></p>
+            <ul class="price-features"><li><i class="fa-solid fa-check"></i> Konsultasi persyaratan gratis</li><li><i class="fa-solid fa-check"></i> Pembuatan akun OSS RBA</li><li><i class="fa-solid fa-check"></i> Penentuan KBLI yang tepat</li><li><i class="fa-solid fa-check"></i> Penerbitan NIB resmi</li><li><i class="fa-solid fa-check"></i> Sertifikat standar / izin dasar</li><li><i class="fa-solid fa-check"></i> Panduan penggunaan NIB</li><li><i class="fa-solid fa-check"></i> Update progres via WhatsApp</li><li><i class="fa-solid fa-check"></i> Garansi revisi data gratis</li></ul>
+            <a href="/pembayaran?layanan=nib" class="btn btn-outline btn-block btn-lg btn-pay" data-require-auth="pay"><i class="fa-solid fa-credit-card"></i> Bayar Sekarang</a>
+          </article>
+
+          <article class="price-card price-card-featured">
+            <span class="price-badge price-badge-hot"><i class="fa-solid fa-crown"></i> Paling Lengkap</span>
+            <h3 class="card-title">Pendirian PT Perorangan</h3>
+            <div class="price-wrap">
+              <span class="price-old" data-price-old="pt"></span>
+              <span class="price-discount" data-discount="pt"></span>
+            </div>
+            <p class="price-value" data-price="pt"></p>
+            <ul class="price-features"><li><i class="fa-solid fa-check"></i> Konsultasi & cek nama PT</li><li><i class="fa-solid fa-check"></i> Penyusunan pernyataan pendirian</li><li><i class="fa-solid fa-check"></i> Sertifikat Pendaftaran Kemenkumham</li><li><i class="fa-solid fa-check"></i> NPWP Badan perusahaan</li><li><i class="fa-solid fa-check"></i> NIB & KBLI perusahaan</li><li><i class="fa-solid fa-check"></i> Panduan rekening atas nama PT</li><li><i class="fa-solid fa-check"></i> Pendampingan penuh sampai terbit</li><li><i class="fa-solid fa-check"></i> Update progres via WhatsApp</li></ul>
+            <a href="/pembayaran?layanan=pt" class="btn btn-white btn-block btn-lg btn-pay" data-require-auth="pay"><i class="fa-solid fa-credit-card"></i> Bayar Sekarang</a>
+          </article>
+        </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TESTIMONIAL ================= -->
+    <section class="section testimonial-section" id="testimonial">
+      <div class="container">
+        <header class="section-head">
+          <span class="eyebrow">Testimonial</span>
+          <h2 class="section-title">Apa Kata Mereka?</h2>
+          <p class="section-subtitle">Pengalaman pelanggan dalam memahami dan mengurus kebutuhan legalitas usaha.</p>
+        </header>
+      </div>
+
+      <!-- Kartu testimonial dirender dari array TESTIMONIALS di /static/app.js -->
+      <div class="marquee" aria-label="Testimonial pelanggan">
+        <div class="marquee-row">
+          <div class="marquee-track marquee-right" id="testimonial-row-1"></div>
+        </div>
+        <div class="marquee-row">
+          <div class="marquee-track marquee-left" id="testimonial-row-2"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FAQ ================= -->
+    <section class="section section-alt" id="faq">
+      <div class="container faq-container">
+        <header class="section-head">
+          <span class="eyebrow">FAQ</span>
+          <h2 class="section-title">Pertanyaan yang Sering Diajukan</h2>
+          <p class="section-subtitle">Belum menemukan jawaban? Tanyakan langsung ke admin kami.</p>
+        </header>
+
+        <div class="faq-list" id="faq-list">
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">Apa itu NPWP?<i class="fa-solid fa-plus"></i></button>
+            <div class="faq-answer"><p>NPWP (Nomor Pokok Wajib Pajak) adalah identitas wajib pajak yang digunakan dalam administrasi perpajakan di Indonesia.</p></div>
+          </div>
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">Apa itu NIB?<i class="fa-solid fa-plus"></i></button>
+            <div class="faq-answer"><p>NIB (Nomor Induk Berusaha) adalah identitas pelaku usaha yang diterbitkan melalui sistem OSS sebagai dasar perizinan berusaha.</p></div>
+          </div>
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">Apa itu PT Perorangan?<i class="fa-solid fa-plus"></i></button>
+            <div class="faq-answer"><p>PT Perorangan adalah badan hukum yang dapat didirikan oleh satu orang dan ditujukan untuk usaha mikro dan kecil.</p></div>
+          </div>
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">Siapa yang membutuhkan NPWP?<i class="fa-solid fa-plus"></i></button>
+            <div class="faq-answer"><p>Individu yang memiliki penghasilan, freelancer, karyawan, maupun pelaku usaha yang memenuhi ketentuan sebagai wajib pajak.</p></div>
+          </div>
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">Siapa yang membutuhkan NIB?<i class="fa-solid fa-plus"></i></button>
+            <div class="faq-answer"><p>Pelaku usaha seperti UMKM, pemilik bisnis online, dan pengusaha pemula yang ingin usahanya memiliki identitas legal.</p></div>
+          </div>
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">Apa perbedaan NIB dan PT Perorangan?<i class="fa-solid fa-plus"></i></button>
+            <div class="faq-answer"><p>NIB adalah identitas pelaku usaha, sedangkan PT Perorangan adalah bentuk badan hukum. PT Perorangan juga tetap memerlukan NIB untuk menjalankan usahanya.</p></div>
+          </div>
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">Apa saja persyaratan pengurusan?<i class="fa-solid fa-plus"></i></button>
+            <div class="faq-answer"><p>Umumnya KTP, email, nomor HP aktif, dan data usaha. Persyaratan lengkap akan dijelaskan admin sesuai layanan yang dipilih.</p></div>
+          </div>
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">Berapa biaya pengurusan?<i class="fa-solid fa-plus"></i></button>
+            <div class="faq-answer">
+              <ul class="faq-prices">
+                <li><span>NPWP</span><strong data-price="npwp">Rp150.000</strong></li>
+                <li><span>NIB</span><strong data-price="nib">Rp150.000</strong></li>
+                <li><span>PT Perorangan</span><strong data-price="pt">Rp200.000</strong></li>
+              </ul>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">Berapa lama proses pengurusan?<i class="fa-solid fa-plus"></i></button>
+            <div class="faq-answer"><p>Waktu proses bergantung pada jenis layanan, kelengkapan dokumen, dan sistem instansi terkait. Estimasi akan diinformasikan saat konsultasi.</p></div>
+          </div>
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">Apakah LegalCraft merupakan instansi pemerintah?<i class="fa-solid fa-plus"></i></button>
+            <div class="faq-answer"><p>Bukan. LegalCraft adalah penyedia jasa bantuan pengurusan legalitas. Penerbitan dan persetujuan dokumen tetap menjadi kewenangan instansi terkait.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FINAL CTA ================= -->
+    <section class="final-cta-wrap">
+      <div class="container">
+        <div class="final-cta">
+          <span class="blob blob-cta" aria-hidden="true"></span>
+          <h2 class="section-title">Siap Memulai Legalitas Usahamu?</h2>
+          <p>Konsultasikan kebutuhan NPWP, NIB, atau PT Perorangan bersama LegalCraft.</p>
+          <button type="button" class="btn btn-white btn-lg" data-open-consult>
+            <i class="fa-brands fa-whatsapp"></i> Konsultasi Sekarang
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="site-footer" id="kontak">
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <a href="#beranda" class="brand brand-footer">
+          <span class="brand-mark"><i class="fa-solid fa-file-signature"></i></span>
+          <span class="brand-name">LegalCraft</span>
+        </a>
+        <p>LegalCraft membantu individu dan pelaku usaha memahami serta menjalani proses pengurusan legalitas dengan lebih praktis.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Layanan</h4>
+        <ul>
+          <li><a href="#layanan">Pengurusan NPWP</a></li>
+          <li><a href="#layanan">Pengurusan NIB</a></li>
+          <li><a href="#layanan">Pendirian PT Perorangan</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Informasi</h4>
+        <ul>
+          <li><a href="#tentang">Tentang Kami</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#kontak">Kontak</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Hubungi Kami</h4>
+        <ul class="footer-contact">
+          <li><i class="fa-brands fa-whatsapp"></i><a href="https://wa.me/6287797890306" target="_blank" rel="noopener">+62 877-9789-0306</a></li>
+          <li><i class="fa-solid fa-envelope"></i><a href="mailto:legalcraft.contact@gmail.com">legalcraft.contact@gmail.com</a></li>
+          <li><i class="fa-solid fa-clock"></i>
+            <span>Setiap hari: 09.00–22.00 WIB<br />Minggu: 09.00–17.00 WIB</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p>© 2026 LegalCraft. All rights reserved.</p>
+      <p class="disclaimer">LegalCraft merupakan penyedia jasa bantuan pengurusan legalitas dan bukan instansi pemerintah. Penerbitan serta persetujuan dokumen berada pada kewenangan instansi terkait sesuai ketentuan yang berlaku.</p>
+    </div>
+  </footer>
+
+  <!-- ================= FLOATING WHATSAPP ================= -->
+  <button type="button" class="wa-float" data-open-consult aria-label="Konsultasi via WhatsApp">
+    <i class="fa-brands fa-whatsapp"></i>
+    <span class="wa-float-label">Konsultasi</span>
+  </button>
+
+  <!-- ================= MODAL KONSULTASI ================= -->
+  <div class="modal" id="consult-modal" role="dialog" aria-modal="true" aria-labelledby="consult-title" hidden>
+    <div class="modal-overlay" data-close-consult></div>
+    <div class="modal-dialog" role="document">
+      <div class="modal-header">
+        <div>
+          <h2 id="consult-title">Form Konsultasi</h2>
+          <p>Isi data berikut, lalu lanjutkan percakapan dengan admin via WhatsApp.</p>
+        </div>
+        <button type="button" class="modal-close" data-close-consult aria-label="Tutup form"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form class="consult-form" id="consult-form" novalidate>
+        <div class="form-group">
+          <label for="f-name">Nama Lengkap <span class="req">*</span></label>
+          <input type="text" id="f-name" name="name" placeholder="Masukkan nama lengkap" autocomplete="name" />
+          <small class="error-msg" data-error-for="name"></small>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="f-email">Email <span class="req">*</span></label>
+            <input type="email" id="f-email" name="email" placeholder="Masukkan alamat email" autocomplete="email" />
+            <small class="error-msg" data-error-for="email"></small>
+          </div>
+          <div class="form-group">
+            <label for="f-phone">Nomor WhatsApp <span class="req">*</span></label>
+            <input type="tel" id="f-phone" name="phone" placeholder="Masukkan nomor WhatsApp" autocomplete="tel" inputmode="tel" />
+            <small class="error-msg" data-error-for="phone"></small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="f-service">Pilih Layanan <span class="req">*</span></label>
+          <select id="f-service" name="service">
+            <option value="">-- Pilih layanan --</option>
+          </select>
+          <small class="error-msg" data-error-for="service"></small>
+        </div>
+
+        <div class="service-summary" id="service-summary" hidden>
+          <span><i class="fa-solid fa-receipt"></i> <span id="summary-name"></span></span>
+          <strong id="summary-price"></strong>
+        </div>
+
+        <div class="form-group">
+          <label for="f-message">Pesan Tambahan <span class="opt">(opsional)</span></label>
+          <textarea id="f-message" name="message" rows="3" placeholder="Contoh: usaha saya kuliner online, ingin tahu KBLI yang cocok..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="f-business">Jenis / Nama Usaha <span class="opt">(opsional)</span></label>
+            <input type="text" id="f-business" name="business" placeholder="Contoh: Toko kue online" />
+          </div>
+          <div class="form-group">
+            <label for="f-city">Domisili <span class="opt">(opsional)</span></label>
+            <input type="text" id="f-city" name="city" placeholder="Contoh: Bandung" autocomplete="address-level2" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg">
+          <i class="fa-brands fa-whatsapp"></i> Lanjutkan ke WhatsApp
+        </button>
+        <p class="form-note"><i class="fa-solid fa-lock"></i> Data hanya dipakai untuk menyusun pesan WhatsApp ke admin LegalCraft.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL WAJIB LOGIN ================= -->
+  <div class="modal" id="auth-gate" role="dialog" aria-modal="true" aria-labelledby="gate-title" hidden>
+    <div class="modal-overlay" data-close-gate></div>
+    <div class="modal-dialog gate-dialog" role="document">
+      <button type="button" class="gate-close" data-close-gate aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
+      <span class="gate-icon"><i class="fa-solid fa-user-lock"></i></span>
+      <h2 id="gate-title">Login Dulu, Yuk!</h2>
+      <p id="gate-text">Untuk melanjutkan, kamu perlu masuk atau membuat akun LegalCraft terlebih dahulu.</p>
+      <ul class="gate-benefits">
+        <li><i class="fa-solid fa-circle-check"></i> Lihat price list &amp; harga promo</li>
+        <li><i class="fa-solid fa-circle-check"></i> Pembayaran terverifikasi otomatis</li>
+        <li><i class="fa-solid fa-circle-check"></i> Data form terisi otomatis saat konsultasi</li>
+      </ul>
+      <div class="gate-actions">
+        <a href="/register" class="btn btn-primary btn-block btn-lg" id="gate-register"><i class="fa-solid fa-user-plus"></i> Daftar Akun Gratis</a>
+        <a href="/login" class="btn btn-outline btn-block btn-lg" id="gate-login"><i class="fa-solid fa-right-to-bracket"></i> Sudah punya akun? Login</a>
+      </div>
+      <small class="gate-note">Pendaftaran hanya butuh &plusmn; 1 menit.</small>
+    </div>
+  </div>
+
+  <script src="/static/app.js?v=7"></script>
+
+</body>
+</html>
