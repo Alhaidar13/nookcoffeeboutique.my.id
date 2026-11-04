@@ -9,6 +9,7 @@ import BrandCta from './sections/BrandCta.jsx'
 import Footer from './sections/Footer.jsx'
 import CatalogPage from './pages/CatalogPage.jsx'
 import ProductDetailPage from './pages/ProductDetailPage.jsx'
+import CheckoutPage from './pages/CheckoutPage.jsx'
 import Toast from './components/Toast.jsx'
 import useHashRoute from './hooks/useHashRoute.js'
 import { CartProvider } from './context/CartContext.jsx'
@@ -45,6 +46,7 @@ export default function App() {
   useEffect(() => {
     const base = `${brand.name} Coffee`
     if (route.page === 'catalog') document.title = `All Coffee — ${base}`
+    else if (route.page === 'checkout') document.title = `Checkout — ${base}`
     else if (route.page === 'detail') document.title = `${getProduct(route.id)?.name || 'Coffee'} — ${base}`
     else document.title = `${base} — Specialty Coffee Boutique`
   }, [routeKey]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -55,6 +57,7 @@ export default function App() {
       <main key={routeKey}>
         {route.page === 'catalog' && <CatalogPage query={route.query} />}
         {route.page === 'detail' && <ProductDetailPage id={route.id} query={route.query} />}
+        {route.page === 'checkout' && <CheckoutPage />}
         {route.page === 'home' && <HomePage />}
       </main>
       <Footer />

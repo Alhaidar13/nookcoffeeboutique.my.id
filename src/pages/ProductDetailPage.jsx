@@ -180,6 +180,17 @@ export default function ProductDetailPage({ id, query = {} }) {
             </button>
           </div>
 
+          {added && (
+            <a
+              href="#/checkout"
+              id="go-to-checkout"
+              className="mt-3 flex items-center justify-center gap-2 rounded-full border border-coffee/30 px-8 py-3.5 text-sm font-medium text-coffee transition-colors hover:border-coffee hover:bg-coffee/5"
+            >
+              Lanjut ke Pembayaran
+              <Icon name="arrow" className="h-4 w-4" />
+            </a>
+          )}
+
           {minQty > 1 && (
             <p
               id="min-order-note"

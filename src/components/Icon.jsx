@@ -72,6 +72,28 @@ const paths = {
       <circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" />
     </>
   ),
+  copy: (
+    <>
+      <rect x="8.5" y="8.5" width="11" height="11" rx="2.5" />
+      <path d="M15.5 8.5V6.5a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2" />
+    </>
+  ),
+  download: <path d="M12 4v11M7 10.5l5 5 5-5M5 19.5h14" />,
+  qr: (
+    <>
+      <rect x="4" y="4" width="6" height="6" rx="1" />
+      <rect x="14" y="4" width="6" height="6" rx="1" />
+      <rect x="4" y="14" width="6" height="6" rx="1" />
+      <path d="M14 14h2.5v2.5H14zM17.5 17.5H20V20h-2.5zM14 19v1M20 14v1" />
+    </>
+  ),
+  bank: (
+    <>
+      <path d="M3.5 9.5 12 4.5l8.5 5H3.5Z" />
+      <path d="M5.5 10v7M9.5 10v7M14.5 10v7M18.5 10v7M3.5 19.5h17" />
+    </>
+  ),
+  trash: <path d="M5 7h14M10 7V5h4v2M7 7l.8 12a1.5 1.5 0 0 0 1.5 1.4h5.4a1.5 1.5 0 0 0 1.5-1.4L17 7" />,
   whatsapp: (
     <>
       <path d="M4 20l1.2-4A8.5 8.5 0 1 1 8.4 19L4 20Z" />

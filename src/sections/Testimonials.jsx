@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import SectionHeading from '../components/SectionHeading.jsx'
 import Reveal from '../components/Reveal.jsx'
 import { testimonials } from '../data/content.js'
@@ -35,12 +36,45 @@ function TestimonialCard({ t }) {
   )
 }
 
-function MarqueeRow({ items, direction }) {
-  // Duplicate list so the -50% translate loops seamlessly
-  const loop = [...items, ...items]
+// Auto-scrolling row driven by requestAnimationFrame.
+// direction="right" -> cards move left-to-right, direction="left" -> right-to-left.
+function MarqueeRow({ items, direction, speed = 40 }) {
+  const trackRef = useRef(null)
+  const paused = useRef(false)
+  // Repeat list so the track is always wider than the screen and loops seamlessly
+  const loop = [...items, ...items, ...items, ...items]
+
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+    let raf
+    let last = performance.now()
+    let offset = 0
+    const step = (now) => {
+      const dt = Math.min(now - last, 64) / 1000
+      last = now
+      const half = track.scrollWidth / 2 // one full set (items x2) = half the track
+      if (half > 0 && !paused.current) {
+        offset += (direction === 'right' ? 1 : -1) * speed * dt
+        if (offset <= -half) offset += half
+        if (offset > 0) offset -= half
+        track.style.transform = `translate3d(${offset}px,0,0)`
+      }
+      raf = requestAnimationFrame(step)
+    }
+    // start right-moving rows already shifted so there is no empty gap on the left
+    if (direction === 'right') offset = -track.scrollWidth / 2
+    raf = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(raf)
+  }, [direction, speed])
+
   return (
-    <div className="marquee overflow-hidden py-3">
-      <div className={`marquee-track marquee-track--${direction}`}>
+    <div
+      className="marquee overflow-hidden py-3"
+      onMouseEnter={() => (paused.current = true)}
+      onMouseLeave={() => (paused.current = false)}
+    >
+      <div ref={trackRef} className="marquee-track" data-direction={direction}>
         {loop.map((t, i) => (
           <div key={`${t.name}-${i}`} aria-hidden={i >= items.length ? 'true' : undefined}>
             <TestimonialCard t={t} />
@@ -69,8 +103,9 @@ export default function Testimonials() {
       </div>
 
       <div className="mt-14 space-y-4">
-        <MarqueeRow items={rowA} direction="left" />
-        <MarqueeRow items={rowB} direction="right" />
+        {/* Top row slides automatically to the right, bottom row to the left */}
+        <MarqueeRow items={rowA} direction="right" />
+        <MarqueeRow items={rowB} direction="left" />
       </div>
     </section>
   )

@@ -23,7 +23,8 @@ export default function Navbar({ route = { page: 'home' } }) {
 
   // Shop link is active on catalog/detail pages
   useEffect(() => {
-    if (route.page !== 'home') setActive('#/coffee')
+    if (route.page === 'checkout') setActive('#/checkout')
+    else if (route.page !== 'home') setActive('#/coffee')
     else setActive(route.anchor ? `#${route.anchor}` : '#home')
   }, [route.page, route.anchor])
 
@@ -59,16 +60,17 @@ export default function Navbar({ route = { page: 'home' } }) {
         </ul>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
+          <a
+            href="#/checkout"
             className="relative flex h-11 w-11 items-center justify-center rounded-full text-coffee transition-colors duration-300 hover:bg-coffee hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coffee"
-            aria-label={`Shopping bag, ${count} items`}
+            aria-label={`Shopping bag & checkout, ${count} items`}
+            title="Bag & Checkout"
           >
             <Icon name="bag" className="h-[22px] w-[22px]" />
             <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-coffee px-1 text-[0.6rem] font-semibold text-cream ring-2 ring-cream">
               {count}
             </span>
-          </button>
+          </a>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}

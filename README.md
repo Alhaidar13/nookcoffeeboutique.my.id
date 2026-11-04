@@ -44,12 +44,23 @@
 
 ### Homepage — Testimonials & Footer
 - **Hero**: judul "Discover the Art of Exceptional Coffee." memakai satu gaya tulisan yang sama (tanpa italic)
-- **Testimonials** (`src/sections/Testimonials.jsx`, `#testimonials`): 2 baris kartu yang bergerak otomatis ke arah berlawanan (baris atas ke kiri, baris bawah ke kanan), loop tanpa jeda, berhenti saat di-hover, dan mematuhi `prefers-reduced-motion`. Data ada di `testimonials` di `src/data/content.js`
+- **Navbar**: menu Home · Shop · About · **Testimonials** · Contact. Ikon tas membuka halaman Checkout
+- **Testimonials** (`src/sections/Testimonials.jsx`, `#testimonials`): 2 baris kartu yang **bergeser otomatis** (bukan manual): **baris atas ke kanan**, **baris bawah ke kiri**. Loop tanpa jeda dan berhenti sebentar saat di-hover. Animasinya digerakkan `requestAnimationFrame`, jadi tetap jalan walaupun pengaturan reduced-motion di perangkat aktif. Data ada di `testimonials` di `src/data/content.js`
 - **Footer**:
   - Customer Center (lokasi): Jl. Bali Raya No. 49, Kelurahan Makasar, Kecamatan Cipinang Melayu, Jakarta Timur, DKI Jakarta, Indonesia (link ke Google Maps)
   - WhatsApp: +6287797890306 dan +6285772196163, langsung membuka chat `wa.me` dengan pesan pembuka
   - Instagram: @nook.coffeeboutique
   - Data kontak ada di `contact` di `src/data/content.js`
+
+### Payment / Checkout (`#/checkout`) — 3 Step
+- **Step 1 · Data Pengiriman**: nama lengkap, email, no. telepon, dan alamat pengiriman wajib diisi dan divalidasi. Jumlah barang di keranjang masih bisa diubah atau dihapus di Ringkasan Pesanan
+- **Step 2 · Metode Pembayaran**: ada 2 pilihan, masing-masing dengan panduan cara bayar:
+  - **GoPay Merchant (QRIS)**: merchant MUHAMMAD FIKRI AL HAIDAR, NMID ID1026501174977 (QR: `public/static/images/qris-gopay.png`, sudah di-crop)
+  - **VA BSI**: no. rekening **7268050897** (ada tombol salin)
+  - Klik **Bayar Sekarang** untuk membuka **pop-up pembayaran** berisi total, QRIS (bisa diunduh) atau nomor rekening BSI, langkah bayar, dan kotak centang konfirmasi sebelum tombol **Saya Sudah Bayar** aktif
+- **Step 3 · Selesai**: ringkasan pesanan (No. Pesanan `NOOK-YYYYMMDD-XXXX`), tombol **Download Struk** (file PNG dibuat di browser lewat canvas), dan tombol **Kirim ke WhatsApp** ke **6287797890306** dengan pesan detail pesanan yang sudah terisi otomatis. Pembeli wajib mengirim struk ini beserta bukti transfer
+- Tidak ada simulasi bayar sukses atau gagal. Verifikasi pembayaran dilakukan manual oleh admin lewat WhatsApp
+- Konfigurasi pembayaran (rekening, merchant, nomor WA, langkah bayar) ada di `payment` di `src/data/content.js`
 
 ## Entry URIs
 | Path | Keterangan |
@@ -60,23 +71,28 @@
 | `/#/coffee?size=sachet\|150g\|250g` | Catalog dengan ukuran default |
 | `/#/coffee?q=luwak` | Catalog dengan kata kunci pencarian |
 | `/#/coffee/:id?size=150g` | Product Detail, misalnya `/#/coffee/aceh-gayo?size=150g` |
+| `/#/checkout` | Payment 3 step (Data Pengiriman → Metode Pembayaran → Selesai) |
+| `/#testimonials` | Section Testimonials di homepage |
 
 ## Data Architecture
 - **Data produk**: data statis di `src/data/catalog.js`, terdiri dari `categories`, `variants`, dan `catalog` (27 produk, dibangun otomatis dari tabel `PRICES`, `AVAILABILITY`, dan `PROFILES`). Untuk menambah atau menghapus origin di suatu ukuran, cukup edit daftar id di `AVAILABILITY`. Setiap produk punya `category`, `bean`, `prices` (hanya ukuran yang tersedia), `notes`, `roast`, `process`, `altitude`, `varietal`, `brew`, dan `description`
 - **Keranjang**: React context (`src/context/CartContext.jsx`) yang disimpan di `localStorage` (`nook-cart-v1`)
 - **Routing**: hash router ringan (`src/hooks/useHashRoute.js`), tanpa dependency tambahan
-- Tidak ada backend, database, atau payment
+- **Checkout**: data pemesan (`nook-checkout-customer`) dan pesanan terakhir (`nook-last-order`) disimpan di `localStorage`. Struk dibuat di browser (`src/utils/receipt.js`)
+- Tidak ada backend atau database. Pembayaran diverifikasi manual via WhatsApp
 
 ## Struktur Kode
 ```
 src/
-├── App.jsx                    # Router: Home / Catalog / Detail
+├── App.jsx                    # Router: Home / Catalog / Detail / Checkout
 ├── data/content.js            # Brand, nav, featured products, features
 ├── data/catalog.js            # Harga, ketersediaan per ukuran, profil rasa (27 produk)
 ├── hooks/useHashRoute.js      # Hash router + sinkronisasi query string
 ├── context/CartContext.jsx    # State keranjang + toast
 ├── pages/CatalogPage.jsx      # Halaman All Coffee
 ├── pages/ProductDetailPage.jsx
+├── pages/CheckoutPage.jsx     # Payment 3 step + pop-up pembayaran
+├── utils/receipt.js           # Generator struk PNG + link WhatsApp
 ├── components/                # Button, Logo, Icon, CoffeeBag, ProductCard,
 │                              # CatalogCard, VariantSelector, Toast, dll.
 └── sections/                  # Navbar, Hero, BrandIntro, FeaturedCoffee, ...
@@ -91,6 +107,8 @@ src/
 1. Di homepage, klik **View All Coffee** (atau menu **Shop**)
 2. Pilih kategori lewat tab, ubah ukuran lewat selector **Size**, atau ketik di kolom pencarian
 3. Klik **View Detail** pada produk, pilih ukuran dan jumlah, lalu klik **Add to Bag**
+4. Klik **Lanjut ke Pembayaran** (atau ikon tas di navbar) → isi data pengiriman → pilih GoPay/BSI → **Bayar Sekarang** → bayar → **Saya Sudah Bayar**
+5. Di Step 3, klik **Download Struk** lalu **Kirim ke WhatsApp** (6287797890306) beserta bukti transfer
 
 ## Development
 ```bash
@@ -100,7 +118,9 @@ npm run dev                      # Vite dev server (mesin lokal)
 ```
 
 ## Belum Diimplementasikan / Next Steps
-- Halaman Cart, Checkout, About, Contact
+- Halaman About dan Contact terpisah
+- Verifikasi pembayaran otomatis (payment gateway/webhook) dan penyimpanan pesanan di D1
+- Perhitungan ongkos kirim otomatis
 - Pilihan grind (whole bean / ground) dan sorting harga di catalog
 - Foto produk asli (sekarang kemasan berupa ilustrasi SVG yang konsisten)
 - Mengganti handle Instagram dan nomor WhatsApp placeholder

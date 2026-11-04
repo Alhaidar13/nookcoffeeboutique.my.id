@@ -37,9 +37,20 @@ export function CartProvider({ children }) {
     setToast({ name: product.name, variant, qty, at: Date.now() })
   }, [])
 
+  const updateQty = useCallback((key, qty) => {
+    setItems((prev) => prev.map((i) => (i.key === key ? { ...i, qty: Math.max(1, Math.min(99, qty)) } : i)))
+  }, [])
+
+  const removeItem = useCallback((key) => setItems((prev) => prev.filter((i) => i.key !== key)), [])
+  const clearCart = useCallback(() => setItems([]), [])
+
   const count = items.reduce((n, i) => n + i.qty, 0)
 
-  return <CartContext.Provider value={{ items, count, addItem, toast }}>{children}</CartContext.Provider>
+  return (
+    <CartContext.Provider value={{ items, count, addItem, updateQty, removeItem, clearCart, toast }}>
+      {children}
+    </CartContext.Provider>
+  )
 }
 
 export const useCart = () => useContext(CartContext)

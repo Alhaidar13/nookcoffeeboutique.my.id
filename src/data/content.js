@@ -11,6 +11,7 @@ export const navLinks = [
   { label: 'Home', href: '#home' },
   { label: 'Shop', href: '#/coffee' },
   { label: 'About', href: '#brand-intro' },
+  { label: 'Testimonials', href: '#testimonials' },
   { label: 'Contact', href: '#site-footer' },
 ]
 
@@ -58,4 +59,45 @@ export const contact = {
     { display: '+62 857-7219-6163', wa: '6285772196163' },
   ],
   instagram: { handle: '@nook.coffeeboutique', url: 'https://www.instagram.com/nook.coffeeboutique/' },
+}
+
+// Payment configuration (used by the checkout page)
+export const payment = {
+  whatsapp: '6287797890306',
+  whatsappDisplay: '+62 877-9789-0306',
+  methods: {
+    gopay: {
+      id: 'gopay',
+      name: 'GoPay Merchant (QRIS)',
+      short: 'GoPay Merchant',
+      merchant: 'MUHAMMAD FIKRI AL HAIDAR',
+      nmid: 'ID1026501174977',
+      qr: '/static/images/qris-gopay.png',
+      description: 'Scan QRIS dari GoPay, OVO, DANA, ShopeePay, LinkAja atau m-banking apa pun.',
+      steps: [
+        'Klik tombol "Bayar Sekarang" untuk menampilkan kode QRIS.',
+        'Buka aplikasi GoPay / e-wallet / m-banking yang mendukung QRIS.',
+        'Pilih menu "Bayar" atau "Scan QR", lalu arahkan kamera ke kode QRIS (atau unduh QR lalu unggah dari galeri).',
+        'Pastikan nama merchant "MUHAMMAD FIKRI AL HAIDAR" dan masukkan nominal sesuai total pembayaran.',
+        'Konfirmasi dengan PIN, lalu simpan bukti transfer.',
+        'Klik "Saya Sudah Bayar" untuk mendapatkan struk pesanan.',
+      ],
+    },
+    bsi: {
+      id: 'bsi',
+      name: 'Virtual Account BSI',
+      short: 'VA BSI',
+      bank: 'Bank Syariah Indonesia (BSI)',
+      account: '7268050897',
+      description: 'Transfer melalui BSI Mobile, ATM, internet banking, atau bank lain.',
+      steps: [
+        'Klik tombol "Bayar Sekarang" untuk menampilkan nomor rekening BSI.',
+        'BSI Mobile: pilih menu "Transfer" › "Transfer Antar Rekening BSI", masukkan nomor 7268050897.',
+        'ATM BSI: pilih "Menu Lainnya" › "Transfer" › "Rekening BSI", masukkan nomor 7268050897.',
+        'Dari bank lain: pilih "Transfer Antar Bank", pilih Bank Syariah Indonesia (kode 451), masukkan nomor 7268050897.',
+        'Masukkan nominal tepat sesuai total pembayaran, periksa nama penerima, lalu konfirmasi.',
+        'Simpan bukti transfer dan klik "Saya Sudah Bayar" untuk mendapatkan struk pesanan.',
+      ],
+    },
+  },
 }
