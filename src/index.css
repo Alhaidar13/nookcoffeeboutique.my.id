@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme {
+  --color-coffee: #3B2418;
+  --color-coffee-light: #5a3a29;
+  --color-cream: #E8DCC8;
+  --color-beige: #F5F0E8;
+  --font-heading: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply bg-beige font-body text-coffee antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-heading;
+  }
+  ::selection {
+    @apply bg-coffee text-cream;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+
+/* Subtle reveal-on-scroll (used sparingly) */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.9s var(--ease-soft), transform 0.9s var(--ease-soft);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
