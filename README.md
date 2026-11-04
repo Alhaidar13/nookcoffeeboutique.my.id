@@ -16,9 +16,18 @@
 3. Tombol **View All Coffee**, menu **Shop**, dan **Shop Coffee Beans** membuka halaman All Coffee
 
 ### All Coffee / Product Catalog (`#/coffee`)
-- **Product Category Filter**: tab All Coffee · Khas Nusantara (7) · Kopi Luwak (3) · Espresso (4), masing-masing dengan jumlah produk
+- **Product Category Filter**: tab All Coffee · Khas Nusantara (Arabika, 23 origin) · Kopi Luwak (Robusta, 1) · Robusta (4), masing-masing dengan jumlah produk
 - **Pengelompokan per kategori**: produk selalu tampil per kategori dengan header sendiri (gambar, deskripsi, jumlah produk, link "See only …"), tidak pernah dicampur dalam satu daftar
-- **Product Variant Selector**: pilihan ukuran global di toolbar (Sachet / 150g / 250g) plus selector per kartu; harga dan label kemasan ikut berubah
+- **Filter ukuran** di toolbar (All / Sachet / 100g / 150g / 250g): hanya menampilkan kopi yang tersedia di ukuran tersebut
+- **Selector ukuran per kartu**: hanya menampilkan ukuran yang benar-benar dijual untuk origin tersebut; harga ikut berubah
+- **Daftar harga**:
+  | Kategori | Ukuran | Harga |
+  |---|---|---|
+  | Khas Nusantara (Arabika) | Sachet | Rp15.000 / sachet (**min. order 5 sachet**) |
+  | Khas Nusantara (Arabika) | 150g | Rp65.000 |
+  | Khas Nusantara (Arabika) | 250g | Rp85.000 |
+  | Kopi Luwak (Robusta) | 100g | Rp215.000 |
+  | Robusta | 250g | Rp105.000 |
 - **Product Grid Layout**: grid kartu responsif (1/2/3/4 kolom) dengan tinggi kartu yang seragam
 - **Product Card**: gambar kemasan, kategori, asal, nama, deskripsi singkat, flavor notes, harga, tombol **View Detail**
 - **Search Product**: mencari berdasarkan nama, asal, flavor notes, roast, proses, atau metode seduh; mendukung banyak kata kunci, shortcut `/`, tombol clear, dan tampilan "No coffee found"
@@ -27,7 +36,8 @@
 ### Product Detail (`#/coffee/:id`)
 - Breadcrumb Home › All Coffee › Kategori › Produk
 - Gambar kemasan besar dan thumbnail per varian ukuran
-- **Pilihan varian ukuran** dalam bentuk kartu (Sachet 10×15g drip bag, 150g, 250g), masing-masing dengan harga
+- **Pilihan varian ukuran** dalam bentuk kartu, hanya ukuran yang tersedia untuk produk tersebut, masing-masing dengan harga
+- **Aturan minimal 5 sachet**: jika jumlah sachet di bawah 5, muncul tulisan kecil berwarna merah "Sachet wajib pesan minimal 5 sachet — tambah N lagi" dan tombol Add to Bag dinonaktifkan sampai jumlahnya mencapai 5
 - Pengatur jumlah dan tombol **Add to Bag** (keranjang tersimpan di localStorage, muncul notifikasi toast)
 - Tasting profile (roast level, flavor notes, metode seduh), spesifikasi (asal, ketinggian, proses, varietas), deskripsi lengkap
 - Rekomendasi "You May Also Like" dari kategori yang sama
@@ -37,13 +47,13 @@
 |---|---|
 | `/` atau `/#home` | Homepage (`#brand-intro`, `#featured-coffee`, `#why-choose-us`, `#site-footer` = anchor section) |
 | `/#/coffee` | All Coffee / Product Catalog |
-| `/#/coffee?category=khas-nusantara\|kopi-luwak\|espresso` | Catalog dengan filter kategori |
+| `/#/coffee?category=khas-nusantara\|kopi-luwak\|robusta` | Catalog dengan filter kategori |
 | `/#/coffee?size=sachet\|150g\|250g` | Catalog dengan ukuran default |
 | `/#/coffee?q=luwak` | Catalog dengan kata kunci pencarian |
 | `/#/coffee/:id?size=150g` | Product Detail, misalnya `/#/coffee/aceh-gayo?size=150g` |
 
 ## Data Architecture
-- **Data produk**: data statis di `src/data/catalog.js`, terdiri dari `categories`, `variants`, dan `catalog` (14 produk). Setiap produk punya `category`, `prices: { sachet, 150g, 250g }`, `notes`, `roast`, `process`, `altitude`, `varietal`, `brew`, dan `description`
+- **Data produk**: data statis di `src/data/catalog.js`, terdiri dari `categories`, `variants`, dan `catalog` (27 produk, dibangun otomatis dari tabel `PRICES`, `AVAILABILITY`, dan `PROFILES`). Untuk menambah atau menghapus origin di suatu ukuran, cukup edit daftar id di `AVAILABILITY`. Setiap produk punya `category`, `bean`, `prices` (hanya ukuran yang tersedia), `notes`, `roast`, `process`, `altitude`, `varietal`, `brew`, dan `description`
 - **Keranjang**: React context (`src/context/CartContext.jsx`) yang disimpan di `localStorage` (`nook-cart-v1`)
 - **Routing**: hash router ringan (`src/hooks/useHashRoute.js`), tanpa dependency tambahan
 - Tidak ada backend, database, atau payment
@@ -53,7 +63,7 @@
 src/
 ├── App.jsx                    # Router: Home / Catalog / Detail
 ├── data/content.js            # Brand, nav, featured products, features
-├── data/catalog.js            # Kategori, varian, 14 produk
+├── data/catalog.js            # Harga, ketersediaan per ukuran, profil rasa (27 produk)
 ├── hooks/useHashRoute.js      # Hash router + sinkronisasi query string
 ├── context/CartContext.jsx    # State keranjang + toast
 ├── pages/CatalogPage.jsx      # Halaman All Coffee

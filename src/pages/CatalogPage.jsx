@@ -8,10 +8,13 @@ import { buildHash, replaceHash } from '../hooks/useHashRoute.js'
 
 const normalize = (s) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 
+const SIZE_OPTIONS = [{ id: 'all', label: 'All' }, ...variants]
+const hasSize = (product, size) => size === 'all' || product.prices[size] != null
+
 const matches = (product, q) => {
   if (!q) return true
   const hay = normalize(
-    [product.name, product.origin, product.short, product.roast, product.process, ...product.notes, ...product.brew].join(' ')
+    [product.name, product.origin, product.bean, product.short, product.roast, product.process, ...product.notes, ...product.brew].join(' ')
   )
   return normalize(q)
     .split(/\s+/)
@@ -21,7 +24,7 @@ const matches = (product, q) => {
 
 export default function CatalogPage({ query = {} }) {
   const validCat = categories.some((c) => c.id === query.category) ? query.category : 'all'
-  const validSize = variants.some((v) => v.id === query.size) ? query.size : '250g'
+  const validSize = variants.some((v) => v.id === query.size) ? query.size : 'all'
 
   const [activeCategory, setActiveCategory] = useState(validCat)
   const [size, setSize] = useState(validSize)
@@ -33,7 +36,7 @@ export default function CatalogPage({ query = {} }) {
     replaceHash(
       buildHash('/coffee', {
         category: activeCategory !== 'all' ? activeCategory : undefined,
-        size: size !== '250g' ? size : undefined,
+        size: size !== 'all' ? size : undefined,
         q: search.trim() || undefined,
       })
     )
@@ -55,17 +58,17 @@ export default function CatalogPage({ query = {} }) {
   const groups = useMemo(() => {
     return categories
       .filter((c) => activeCategory === 'all' || c.id === activeCategory)
-      .map((c) => ({ ...c, items: catalog.filter((p) => p.category === c.id && matches(p, search)) }))
-  }, [activeCategory, search])
+      .map((c) => ({ ...c, items: catalog.filter((p) => p.category === c.id && hasSize(p, size) && matches(p, search)) }))
+  }, [activeCategory, search, size])
 
   const counts = useMemo(() => {
     const map = { all: 0 }
     categories.forEach((c) => {
-      map[c.id] = catalog.filter((p) => p.category === c.id && matches(p, search)).length
+      map[c.id] = catalog.filter((p) => p.category === c.id && hasSize(p, size) && matches(p, search)).length
       map.all += map[c.id]
     })
     return map
-  }, [search])
+  }, [search, size])
 
   const totalVisible = groups.reduce((n, g) => n + g.items.length, 0)
   const tabs = [{ id: 'all', name: 'All Coffee' }, ...categories]
@@ -94,7 +97,7 @@ export default function CatalogPage({ query = {} }) {
             Explore Our Coffee Collection.
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-cream/75 sm:text-lg">
-            From single-origin Nusantara treasures to rare Kopi Luwak and espresso blends — find the bag that fits your ritual.
+            From single-origin Nusantara arabica to rare Kopi Luwak and bold Indonesian robusta — find the bag that fits your ritual.
           </p>
 
           {/* Search */}
@@ -160,7 +163,7 @@ export default function CatalogPage({ query = {} }) {
 
           <div className="flex items-center gap-3">
             <span className="text-xs font-medium uppercase tracking-[0.2em] text-coffee/55">Size</span>
-            <VariantSelector value={size} onChange={setSize} label="Default size for all products" className="bg-white ring-1 ring-coffee/10" />
+            <VariantSelector value={size} onChange={setSize} options={SIZE_OPTIONS} label="Filter by size" className="bg-white ring-1 ring-coffee/10" />
           </div>
         </div>
       </div>
@@ -188,13 +191,14 @@ export default function CatalogPage({ query = {} }) {
             </span>
             <h2 className="mt-6 text-2xl font-semibold text-coffee">No coffee found</h2>
             <p className="mt-2 max-w-sm text-coffee/65">
-              We couldn’t find a match for “{search}”. Try another name, origin, or flavor note.
+              {search ? <>We couldn’t find a match for “{search}”. Try another name, origin, or flavor note.</> : <>No coffee is available in this size for the selected category.</>}
             </p>
             <button
               type="button"
               onClick={() => {
                 setSearch('')
                 setActiveCategory('all')
+                setSize('all')
               }}
               className="mt-8 rounded-full bg-coffee px-6 py-3 text-sm font-medium text-cream transition-colors hover:bg-coffee-light"
             >
@@ -244,7 +248,7 @@ export default function CatalogPage({ query = {} }) {
                 <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {group.items.map((p, i) => (
                     <Reveal as="li" key={p.id} delay={(i % 4) * 70}>
-                      <CatalogCard product={p} defaultVariant={size} />
+                      <CatalogCard product={p} defaultVariant={size === 'all' ? undefined : size} />
                     </Reveal>
                   ))}
                 </ul>

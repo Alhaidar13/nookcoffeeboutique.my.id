@@ -1,15 +1,19 @@
-import { variants } from '../data/catalog.js'
+import { variants as allVariants } from '../data/catalog.js'
 import { formatRupiah } from '../data/content.js'
 
 // size = 'sm'  -> compact segmented pills (used on cards & toolbar)
 // size = 'lg'  -> detailed option cards with price (used on Product Detail)
-export default function VariantSelector({ value, onChange, prices, size = 'sm', label = 'Select size', className = '' }) {
+// options      -> list of variants to show (defaults to all sizes)
+export default function VariantSelector({ value, onChange, prices, options, size = 'sm', label = 'Select size', className = '' }) {
+  const list = options || (prices ? allVariants.filter((v) => prices[v.id] != null) : allVariants)
+
   if (size === 'lg') {
+    const cols = { 1: 'grid-cols-1 sm:grid-cols-2', 2: 'grid-cols-2', 3: 'grid-cols-3', 4: 'grid-cols-2 sm:grid-cols-4' }[list.length] || 'grid-cols-3'
     return (
       <fieldset className={`variant-selector ${className}`}>
         <legend className="mb-3 text-xs font-medium uppercase tracking-[0.25em] text-coffee/60">{label}</legend>
-        <div className="grid grid-cols-3 gap-3">
-          {variants.map((v) => {
+        <div className={`grid gap-3 ${cols}`}>
+          {list.map((v) => {
             const active = value === v.id
             return (
               <label
@@ -20,21 +24,13 @@ export default function VariantSelector({ value, onChange, prices, size = 'sm', 
                     : 'border-coffee/15 bg-white text-coffee hover:border-coffee/40'
                 }`}
               >
-                <input
-                  type="radio"
-                  name="variant"
-                  value={v.id}
-                  checked={active}
-                  onChange={() => onChange(v.id)}
-                  className="sr-only"
-                />
+                <input type="radio" name="variant" value={v.id} checked={active} onChange={() => onChange(v.id)} className="sr-only" />
                 <span className="font-heading text-base font-semibold sm:text-lg">{v.label}</span>
-                <span className={`mt-0.5 text-[0.7rem] leading-snug ${active ? 'text-cream/70' : 'text-coffee/55'}`}>
-                  {v.detail}
-                </span>
+                <span className={`mt-0.5 text-[0.7rem] leading-snug ${active ? 'text-cream/70' : 'text-coffee/55'}`}>{v.detail}</span>
                 {prices && (
                   <span className={`mt-3 text-sm font-medium ${active ? 'text-cream' : 'text-coffee'}`}>
                     {formatRupiah(prices[v.id])}
+                    {v.id === 'sachet' && <span className={`text-xs font-normal ${active ? 'text-cream/70' : 'text-coffee/55'}`}> /sachet</span>}
                   </span>
                 )}
               </label>
@@ -47,7 +43,7 @@ export default function VariantSelector({ value, onChange, prices, size = 'sm', 
 
   return (
     <div role="radiogroup" aria-label={label} className={`variant-selector inline-flex rounded-full bg-beige p-1 ${className}`}>
-      {variants.map((v) => {
+      {list.map((v) => {
         const active = value === v.id
         return (
           <button
@@ -56,7 +52,7 @@ export default function VariantSelector({ value, onChange, prices, size = 'sm', 
             role="radio"
             aria-checked={active}
             onClick={() => onChange(v.id)}
-            className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coffee ${
+            className={`whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coffee ${
               active ? 'bg-coffee text-cream shadow-sm' : 'text-coffee/65 hover:text-coffee'
             }`}
           >

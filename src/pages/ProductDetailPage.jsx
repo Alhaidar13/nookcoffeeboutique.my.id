@@ -5,13 +5,13 @@ import RoastMeter from '../components/RoastMeter.jsx'
 import VariantSelector from '../components/VariantSelector.jsx'
 import CatalogCard, { variantWeight } from '../components/CatalogCard.jsx'
 import { formatRupiah } from '../data/content.js'
-import { catalog, getCategory, getProduct, variants } from '../data/catalog.js'
+import { availableVariants, catalog, defaultVariantFor, getCategory, getProduct, minQtyFor, variants } from '../data/catalog.js'
 import { buildHash, replaceHash } from '../hooks/useHashRoute.js'
 import { useCart } from '../context/CartContext.jsx'
 
 export default function ProductDetailPage({ id, query = {} }) {
   const product = getProduct(id)
-  const initialSize = variants.some((v) => v.id === query.size) ? query.size : '250g'
+  const initialSize = defaultVariantFor(product, variants.some((v) => v.id === query.size) ? query.size : undefined)
   const [variant, setVariant] = useState(initialSize)
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
@@ -46,7 +46,10 @@ export default function ProductDetailPage({ id, query = {} }) {
 
   const category = getCategory(product.category)
   const selected = variants.find((v) => v.id === variant)
+  const options = availableVariants(product)
   const price = product.prices[variant]
+  const minQty = minQtyFor(variant)
+  const belowMin = qty < minQty
   const related = catalog.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4)
 
   const specs = [
@@ -94,8 +97,9 @@ export default function ProductDetailPage({ id, query = {} }) {
             </figure>
 
             {/* Variant thumbnails */}
-            <ul className="mt-4 grid grid-cols-3 gap-4" aria-label="Size previews">
-              {variants.map((v) => (
+            {options.length > 1 && (
+            <ul className={`mt-4 grid gap-4 ${options.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`} aria-label="Size previews">
+              {options.map((v) => (
                 <li key={v.id}>
                   <button
                     type="button"
@@ -111,6 +115,7 @@ export default function ProductDetailPage({ id, query = {} }) {
                 </li>
               ))}
             </ul>
+            )}
           </div>
         </div>
 
@@ -124,6 +129,7 @@ export default function ProductDetailPage({ id, query = {} }) {
           <p className="mt-3 flex items-center gap-1.5 text-sm text-coffee/60">
             <Icon name="pin" className="h-4 w-4" />
             {product.origin}
+            <span className="ml-2 rounded-full bg-beige px-2.5 py-0.5 text-xs font-medium text-coffee">{product.bean}</span>
           </p>
 
           <p className="mt-6 text-lg leading-relaxed text-coffee/80">{product.short}</p>
@@ -135,7 +141,7 @@ export default function ProductDetailPage({ id, query = {} }) {
           </div>
 
           {/* Variant selector */}
-          <VariantSelector size="lg" value={variant} onChange={setVariant} prices={product.prices} label="Choose size" className="mt-8" />
+          <VariantSelector size="lg" value={variant} onChange={setVariant} prices={product.prices} options={options} label="Choose size" className="mt-8" />
 
           {/* Qty + CTA */}
           <div className="mt-8 flex flex-col gap-4 sm:flex-row">
@@ -152,7 +158,7 @@ export default function ProductDetailPage({ id, query = {} }) {
               <span className="font-heading text-lg font-semibold text-coffee" aria-live="polite" aria-label={`Quantity ${qty}`}>{qty}</span>
               <button
                 type="button"
-                onClick={() => setQty((q) => Math.min(20, q + 1))}
+                onClick={() => setQty((q) => Math.min(99, q + 1))}
                 className="flex h-10 w-10 items-center justify-center rounded-full text-coffee transition-colors hover:bg-beige"
                 aria-label="Increase quantity"
               >
@@ -162,15 +168,30 @@ export default function ProductDetailPage({ id, query = {} }) {
             <button
               type="button"
               onClick={() => {
+                if (belowMin) return
                 addItem(product, variant, qty)
                 setAdded(true)
               }}
-              className="group inline-flex flex-1 items-center justify-center gap-3 rounded-full bg-coffee px-8 py-4 text-sm font-medium text-cream transition-all duration-300 hover:-translate-y-0.5 hover:bg-coffee-light hover:shadow-[0_12px_30px_-10px_rgba(59,36,24,0.55)] active:scale-[0.98]"
+              disabled={belowMin}
+              className="group disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none inline-flex flex-1 items-center justify-center gap-3 rounded-full bg-coffee px-8 py-4 text-sm font-medium text-cream transition-all duration-300 hover:-translate-y-0.5 hover:bg-coffee-light hover:shadow-[0_12px_30px_-10px_rgba(59,36,24,0.55)] active:scale-[0.98]"
             >
               <Icon name={added ? 'check' : 'bag'} className="h-5 w-5" />
-              {added ? 'Added to Bag' : `Add to Bag · ${formatRupiah(price * qty)}`}
+              {added ? 'Added to Bag' : belowMin ? `Min. order ${minQty} sachets` : `Add to Bag · ${formatRupiah(price * qty)}`}
             </button>
           </div>
+
+          {minQty > 1 && (
+            <p
+              id="min-order-note"
+              role={belowMin ? 'alert' : undefined}
+              className={`mt-3 flex items-center gap-1.5 text-xs ${belowMin ? 'font-medium text-red-600' : 'text-coffee/55'}`}
+            >
+              <Icon name={belowMin ? 'close' : 'check'} className="h-3.5 w-3.5" />
+              {belowMin
+                ? `Sachet wajib pesan minimal ${minQty} sachet — tambah ${minQty - qty} lagi.`
+                : `Minimal pemesanan sachet ${minQty} pcs terpenuhi.`}
+            </p>
+          )}
 
           <p className="mt-4 flex items-center gap-2 text-xs text-coffee/55">
             <Icon name="truck" className="h-4 w-4" />

@@ -3,16 +3,18 @@ import CoffeeBag from './CoffeeBag.jsx'
 import Icon from './Icon.jsx'
 import VariantSelector from './VariantSelector.jsx'
 import { formatRupiah } from '../data/content.js'
-import { getCategory, variants } from '../data/catalog.js'
+import { availableVariants, defaultVariantFor, getCategory, minQtyFor, variants } from '../data/catalog.js'
 
-export const variantWeight = (id) => (id === 'sachet' ? 'Drip Bag' : variants.find((v) => v.id === id)?.label || id)
+export const variantWeight = (id) => variants.find((v) => v.id === id)?.label || id
 
-export default function CatalogCard({ product, defaultVariant = '250g' }) {
-  const [variant, setVariant] = useState(defaultVariant)
-  useEffect(() => setVariant(defaultVariant), [defaultVariant])
+export default function CatalogCard({ product, defaultVariant }) {
+  const [variant, setVariant] = useState(() => defaultVariantFor(product, defaultVariant))
+  useEffect(() => setVariant(defaultVariantFor(product, defaultVariant)), [product, defaultVariant])
 
   const category = getCategory(product.category)
+  const options = availableVariants(product)
   const href = `#/coffee/${product.id}?size=${variant}`
+  const minQty = minQtyFor(variant)
 
   return (
     <article className="catalog-card group flex h-full flex-col overflow-hidden rounded-3xl bg-white ring-1 ring-coffee/5 transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(59,36,24,0.45)]">
@@ -29,7 +31,7 @@ export default function CatalogCard({ product, defaultVariant = '250g' }) {
           className="relative mx-auto h-full w-auto py-5 drop-shadow-xl transition-transform duration-700 ease-out group-hover:-translate-y-1.5 group-hover:scale-[1.03]"
         />
         <span className="absolute left-4 top-4 rounded-full bg-white/85 px-3 py-1 text-[0.6rem] font-medium uppercase tracking-[0.2em] text-coffee backdrop-blur">
-          {category.name}
+          {product.bean}
         </span>
         {product.bestSeller && (
           <span className="absolute right-4 top-4 rounded-full bg-coffee px-3 py-1 text-[0.6rem] font-medium uppercase tracking-[0.2em] text-cream">
@@ -59,13 +61,30 @@ export default function CatalogCard({ product, defaultVariant = '250g' }) {
         </ul>
 
         <div className="mt-5 border-t border-coffee/10 pt-4">
-          <VariantSelector value={variant} onChange={setVariant} label={`Size for ${product.name}`} className="w-full justify-between [&>button]:flex-1" />
+          {options.length > 1 ? (
+            <VariantSelector
+              value={variant}
+              onChange={setVariant}
+              options={options}
+              label={`Size for ${product.name}`}
+              className="w-full justify-between [&>button]:flex-1"
+            />
+          ) : (
+            <p className="flex items-center justify-between rounded-full bg-beige px-4 py-1.5 text-xs font-medium text-coffee">
+              <span className="text-coffee/60">Size</span>
+              {options[0]?.label}
+            </p>
+          )}
         </div>
 
         <div className="mt-auto flex items-end justify-between gap-3 pt-5">
           <p className="flex min-w-0 flex-col">
             <span className="text-[0.62rem] uppercase tracking-[0.2em] text-coffee/50">Price</span>
-            <span className="whitespace-nowrap font-heading text-base font-semibold text-coffee sm:text-lg">{formatRupiah(product.prices[variant])}</span>
+            <span className="whitespace-nowrap font-heading text-base font-semibold text-coffee sm:text-lg">
+              {formatRupiah(product.prices[variant])}
+              {variant === 'sachet' && <span className="text-xs font-normal text-coffee/55"> /sachet</span>}
+            </span>
+            {minQty > 1 && <span className="mt-0.5 text-[0.68rem] text-amber-700">Min. order {minQty} sachets</span>}
           </p>
           <a
             href={href}
