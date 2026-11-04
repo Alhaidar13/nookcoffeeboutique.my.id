@@ -47,7 +47,7 @@ export default function CoffeeBag({ product, className = '' }) {
       <rect x="66" y="104" width="128" height="170" rx="4" fill="#E8DCC8" />
       <rect x="66" y="104" width="128" height="6" rx="2" fill={product.label} />
       <text x="130" y="134" textAnchor="middle" fontFamily="Montserrat" fontSize="8" letterSpacing="3.5" fill="#3B2418" fillOpacity="0.7">
-        ARUNIKA
+        NOOK
       </text>
       <line x1="112" y1="143" x2="148" y2="143" stroke="#3B2418" strokeOpacity="0.3" />
       <text x="130" y="172" textAnchor="middle" fontFamily="Montserrat" fontWeight="600" fontSize="15" fill="#3B2418">

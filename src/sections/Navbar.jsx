@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react'
 import Logo from '../components/Logo.jsx'
 import Icon from '../components/Icon.jsx'
 import { navLinks } from '../data/content.js'
+import { useCart } from '../context/CartContext.jsx'
 
-export default function Navbar() {
+export default function Navbar({ route = { page: 'home' } }) {
+  const { count } = useCart()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [active, setActive] = useState('#home')
@@ -18,6 +20,12 @@ export default function Navbar() {
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
   }, [open])
+
+  // Shop link is active on catalog/detail pages
+  useEffect(() => {
+    if (route.page !== 'home') setActive('#/coffee')
+    else setActive(route.anchor ? `#${route.anchor}` : '#home')
+  }, [route.page, route.anchor])
 
   const handleClick = (href) => {
     setActive(href)
@@ -54,11 +62,11 @@ export default function Navbar() {
           <button
             type="button"
             className="relative flex h-11 w-11 items-center justify-center rounded-full text-coffee transition-colors duration-300 hover:bg-coffee hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coffee"
-            aria-label="Shopping bag, 0 items"
+            aria-label={`Shopping bag, ${count} items`}
           >
             <Icon name="bag" className="h-[22px] w-[22px]" />
             <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-coffee px-1 text-[0.6rem] font-semibold text-cream ring-2 ring-cream">
-              0
+              {count}
             </span>
           </button>
           <button

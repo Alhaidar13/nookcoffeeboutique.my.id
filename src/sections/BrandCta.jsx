@@ -27,7 +27,7 @@ export default function BrandCta() {
             </p>
           </div>
           <div className="lg:col-span-4 lg:flex lg:justify-end">
-            <Button href="#featured-coffee" variant="light" withArrow className="!px-9 !py-4 text-base">
+            <Button href="#/coffee" variant="light" withArrow className="!px-9 !py-4 text-base">
               Shop Coffee Beans
             </Button>
           </div>

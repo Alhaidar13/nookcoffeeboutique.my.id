@@ -3,7 +3,7 @@ import Icon from '../components/Icon.jsx'
 import { brand, navLinks } from '../data/content.js'
 
 const socials = [
-  { label: 'Instagram', handle: '@arunika.coffee', href: 'https://instagram.com/', icon: 'instagram' },
+  { label: 'Instagram', handle: '@nook.coffee', href: 'https://instagram.com/', icon: 'instagram' },
   { label: 'WhatsApp', handle: '+62 812 0000 0000', href: 'https://wa.me/6281200000000', icon: 'whatsapp' },
 ]
 

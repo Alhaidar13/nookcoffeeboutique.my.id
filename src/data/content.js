@@ -1,5 +1,7 @@
+import { catalog } from './catalog.js'
+
 export const brand = {
-  name: 'Arunika',
+  name: 'Nook',
   tagline: 'Coffee Boutique',
   description:
     'A specialty coffee boutique celebrating the finest Indonesian origins — thoughtfully sourced, carefully roasted, and delivered fresh to your brew bar.',
@@ -7,49 +9,15 @@ export const brand = {
 
 export const navLinks = [
   { label: 'Home', href: '#home' },
-  { label: 'Shop', href: '#featured-coffee' },
+  { label: 'Shop', href: '#/coffee' },
   { label: 'About', href: '#brand-intro' },
   { label: 'Contact', href: '#site-footer' },
 ]
 
-export const products = [
-  {
-    id: 'aceh-gayo',
-    name: 'Aceh Gayo',
-    origin: 'Aceh, Indonesia',
-    roast: 'Medium Roast',
-    roastLevel: 3,
-    notes: ['Chocolate', 'Caramel', 'Citrus'],
-    price: 85000,
-    weight: '200g',
-    altitude: '1,400 masl',
-    label: '#C9A77C',
-  },
-  {
-    id: 'toraja-sapan',
-    name: 'Toraja Sapan',
-    origin: 'Toraja, Indonesia',
-    roast: 'Medium Dark',
-    roastLevel: 4,
-    notes: ['Dark Chocolate', 'Spice', 'Nutty'],
-    price: 95000,
-    weight: '200g',
-    altitude: '1,600 masl',
-    label: '#A88463',
-  },
-  {
-    id: 'kintamani',
-    name: 'Kintamani',
-    origin: 'Bali, Indonesia',
-    roast: 'Light Roast',
-    roastLevel: 2,
-    notes: ['Citrus', 'Floral', 'Brown Sugar'],
-    price: 90000,
-    weight: '200g',
-    altitude: '1,300 masl',
-    label: '#D8C3A0',
-  },
-]
+// Featured products on the homepage are derived from the catalogue (250g bag)
+export const products = catalog
+  .filter((p) => p.featured)
+  .map((p) => ({ ...p, weight: '250g', price: p.prices['250g'] }))
 
 export const features = [
   {

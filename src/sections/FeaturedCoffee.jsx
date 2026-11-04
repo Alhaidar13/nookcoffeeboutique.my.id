@@ -25,7 +25,7 @@ export default function FeaturedCoffee() {
         </ul>
 
         <div className="mt-14 flex justify-center">
-          <Button href="#featured-coffee" variant="outline" withArrow>
+          <Button href="#/coffee" variant="outline" withArrow>
             View All Coffee
           </Button>
         </div>

@@ -58,7 +58,7 @@ export default function ProductCard({ product }) {
             <span className="font-heading text-xl font-semibold text-coffee">{formatRupiah(product.price)}</span>
           </p>
           <a
-            href="#featured-coffee"
+            href={`#/coffee/${product.id}`}
             className="inline-flex items-center gap-2 rounded-full bg-coffee px-5 py-3 text-sm font-medium text-cream transition-all duration-300 hover:bg-coffee-light hover:shadow-lg active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coffee focus-visible:ring-offset-2"
             aria-label={`View ${product.name}`}
           >
