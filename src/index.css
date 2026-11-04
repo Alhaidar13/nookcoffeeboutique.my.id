@@ -41,3 +41,29 @@
   opacity: 1;
   transform: none;
 }
+
+/* Testimonials auto-scrolling marquee (two opposite directions) */
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes marquee-right {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+.marquee {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 1.5rem;
+}
+.marquee-track--left { animation: marquee-left 45s linear infinite; }
+.marquee-track--right { animation: marquee-right 45s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track--left, .marquee-track--right { animation: none !important; }
+  .marquee { overflow-x: auto; }
+}

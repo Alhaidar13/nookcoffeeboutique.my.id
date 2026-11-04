@@ -6,7 +6,7 @@
 - **Design direction**: Premium boutique · Modern minimalist · Warm & earthy · Editorial
 
 ## URLs
-- **GitHub**: https://github.com/Alhaidar13/nookXbooutique
+- **GitHub**: https://github.com/Alhaidar13/nookcoffeeboutique.my.id
 - **Production**: belum di-deploy
 
 ## Fitur yang Sudah Selesai
@@ -41,6 +41,15 @@
 - Pengatur jumlah dan tombol **Add to Bag** (keranjang tersimpan di localStorage, muncul notifikasi toast)
 - Tasting profile (roast level, flavor notes, metode seduh), spesifikasi (asal, ketinggian, proses, varietas), deskripsi lengkap
 - Rekomendasi "You May Also Like" dari kategori yang sama
+
+### Homepage — Testimonials & Footer
+- **Hero**: judul "Discover the Art of Exceptional Coffee." memakai satu gaya tulisan yang sama (tanpa italic)
+- **Testimonials** (`src/sections/Testimonials.jsx`, `#testimonials`): 2 baris kartu yang bergerak otomatis ke arah berlawanan (baris atas ke kiri, baris bawah ke kanan), loop tanpa jeda, berhenti saat di-hover, dan mematuhi `prefers-reduced-motion`. Data ada di `testimonials` di `src/data/content.js`
+- **Footer**:
+  - Customer Center (lokasi): Jl. Bali Raya No. 49, Kelurahan Makasar, Kecamatan Cipinang Melayu, Jakarta Timur, DKI Jakarta, Indonesia (link ke Google Maps)
+  - WhatsApp: +6287797890306 dan +6285772196163, langsung membuka chat `wa.me` dengan pesan pembuka
+  - Instagram: @nook.coffeeboutique
+  - Data kontak ada di `contact` di `src/data/content.js`
 
 ## Entry URIs
 | Path | Keterangan |

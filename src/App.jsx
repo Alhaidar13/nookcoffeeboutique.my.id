@@ -4,6 +4,7 @@ import Hero from './sections/Hero.jsx'
 import BrandIntro from './sections/BrandIntro.jsx'
 import FeaturedCoffee from './sections/FeaturedCoffee.jsx'
 import WhyChooseUs from './sections/WhyChooseUs.jsx'
+import Testimonials from './sections/Testimonials.jsx'
 import BrandCta from './sections/BrandCta.jsx'
 import Footer from './sections/Footer.jsx'
 import CatalogPage from './pages/CatalogPage.jsx'
@@ -21,6 +22,7 @@ function HomePage() {
       <BrandIntro />
       <FeaturedCoffee />
       <WhyChooseUs />
+      <Testimonials />
       <BrandCta />
     </>
   )

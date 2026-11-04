@@ -23,8 +23,7 @@ export default function Hero() {
           </span>
 
           <h1 className="mt-7 text-[2.6rem] font-semibold leading-[1.08] tracking-tight text-coffee sm:text-6xl lg:text-[4.25rem]">
-            Discover the Art of{' '}
-            <span className="font-normal italic text-coffee/80">Exceptional</span> Coffee.
+            Discover the Art of Exceptional Coffee.
           </h1>
 
           <p className="mt-7 max-w-lg text-base leading-relaxed text-coffee/75 sm:text-lg">

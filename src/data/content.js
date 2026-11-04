@@ -38,3 +38,24 @@ export const features = [
 ]
 
 export const formatRupiah = (value) => 'Rp' + value.toLocaleString('id-ID')
+
+export const testimonials = [
+  { name: 'Rina Kartika', role: 'Home Brewer, Jakarta', rating: 5, quote: 'Aceh Gayo-nya juara! Aromanya wangi banget dan rasanya clean. Sekarang jadi langganan tiap bulan.' },
+  { name: 'Dimas Pratama', role: 'Barista, Bandung', rating: 5, quote: 'Roast profile-nya konsisten dan biji kopinya fresh. Cocok banget buat manual brew maupun espresso.' },
+  { name: 'Sarah Wijaya', role: 'Coffee Lover, Bekasi', rating: 5, quote: 'Packaging premium, pengiriman cepat, dan kopinya benar-benar specialty grade. Highly recommended!' },
+  { name: 'Andi Saputra', role: 'Café Owner, Depok', rating: 5, quote: 'Kami pakai Nook untuk house blend di café. Pelanggan suka, rasanya balance dan body-nya mantap.' },
+  { name: 'Maya Lestari', role: 'Office Worker, Jakarta', rating: 4, quote: 'Kopi sachet-nya praktis buat di kantor tapi rasanya tetap premium. Toraja favorit saya!' },
+  { name: 'Budi Hartono', role: 'Coffee Enthusiast, Tangerang', rating: 5, quote: 'Kopi Luwak-nya smooth sekali, tidak asam. Worth every rupiah untuk pengalaman ngopi spesial.' },
+  { name: 'Nadia Putri', role: 'Food Blogger, Jakarta', rating: 5, quote: 'Kintamani dengan notes citrus yang segar — cantik banget buat V60. Pelayanan admin juga ramah.' },
+  { name: 'Fajar Nugroho', role: 'Home Barista, Bogor', rating: 5, quote: 'Dari roasting sampai tiba di rumah cuma beberapa hari. Kesegarannya terasa dari crema-nya.' },
+]
+
+export const contact = {
+  address:
+    'Jl. Bali Raya No. 49, Kelurahan Makasar, Kecamatan Cipinang Melayu, Jakarta Timur, DKI Jakarta, Indonesia.',
+  phones: [
+    { display: '+62 877-9789-0306', wa: '6287797890306' },
+    { display: '+62 857-7219-6163', wa: '6285772196163' },
+  ],
+  instagram: { handle: '@nook.coffeeboutique', url: 'https://www.instagram.com/nook.coffeeboutique/' },
+}

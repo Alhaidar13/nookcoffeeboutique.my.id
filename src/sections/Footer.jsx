@@ -1,23 +1,41 @@
 import Logo from '../components/Logo.jsx'
 import Icon from '../components/Icon.jsx'
-import { brand, navLinks } from '../data/content.js'
+import { brand, navLinks, contact } from '../data/content.js'
 
-const socials = [
-  { label: 'Instagram', handle: '@nook.coffee', href: 'https://instagram.com/', icon: 'instagram' },
-  { label: 'WhatsApp', handle: '+62 812 0000 0000', href: 'https://wa.me/6281200000000', icon: 'whatsapp' },
-]
+const waMessage = encodeURIComponent('Halo Nook Coffee Boutique, saya ingin bertanya tentang produk kopi Anda.')
+const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.address)}`
+
+function ContactLink({ href, icon, label, value }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group flex items-start gap-4"
+      aria-label={`${label} ${value}`}
+    >
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-cream/25 transition-colors duration-300 group-hover:border-cream group-hover:bg-cream group-hover:text-coffee">
+        <Icon name={icon} />
+      </span>
+      <span className="flex flex-col pt-0.5">
+        <span className="text-xs text-cream/50">{label}</span>
+        <span className="text-sm leading-relaxed text-cream/85 transition-colors group-hover:text-white">{value}</span>
+      </span>
+    </a>
+  )
+}
 
 export default function Footer() {
   const year = new Date().getFullYear()
   return (
     <footer id="site-footer" className="bg-coffee text-cream">
-      <div className="mx-auto grid max-w-7xl gap-12 px-5 py-16 sm:px-8 md:grid-cols-12 md:py-20">
-        <div className="md:col-span-5">
+      <div className="mx-auto grid max-w-7xl gap-12 px-5 py-16 sm:px-8 md:grid-cols-2 md:py-20 lg:grid-cols-12">
+        <div className="lg:col-span-4">
           <Logo tone="light" />
           <p className="mt-6 max-w-sm text-sm leading-relaxed text-cream/65">{brand.description}</p>
         </div>
 
-        <nav className="md:col-span-3" aria-label="Footer quick links">
+        <nav className="lg:col-span-2" aria-label="Footer quick links">
           <h3 className="text-xs font-semibold uppercase tracking-[0.3em] text-cream/50">Quick Links</h3>
           <ul className="mt-5 space-y-3">
             {navLinks.map((link) => (
@@ -30,28 +48,29 @@ export default function Footer() {
           </ul>
         </nav>
 
-        <div className="md:col-span-4">
+        <address id="customer-center" className="not-italic lg:col-span-3">
+          <h3 className="text-xs font-semibold uppercase tracking-[0.3em] text-cream/50">Customer Center</h3>
+          <div className="mt-5">
+            <ContactLink href={mapsUrl} icon="pin" label="Lokasi" value={contact.address} />
+          </div>
+        </address>
+
+        <div id="footer-connect" className="lg:col-span-3">
           <h3 className="text-xs font-semibold uppercase tracking-[0.3em] text-cream/50">Connect With Us</h3>
           <ul className="mt-5 space-y-4">
-            {socials.map((s) => (
-              <li key={s.label}>
-                <a
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center gap-4"
-                  aria-label={`${s.label} ${s.handle}`}
-                >
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full border border-cream/25 transition-colors duration-300 group-hover:border-cream group-hover:bg-cream group-hover:text-coffee">
-                    <Icon name={s.icon} />
-                  </span>
-                  <span className="flex flex-col">
-                    <span className="text-xs text-cream/50">{s.label}</span>
-                    <span className="text-sm text-cream/85 transition-colors group-hover:text-white">{s.handle}</span>
-                  </span>
-                </a>
+            {contact.phones.map((p) => (
+              <li key={p.wa}>
+                <ContactLink
+                  href={`https://wa.me/${p.wa}?text=${waMessage}`}
+                  icon="whatsapp"
+                  label="WhatsApp"
+                  value={p.display}
+                />
               </li>
             ))}
+            <li>
+              <ContactLink href={contact.instagram.url} icon="instagram" label="Instagram" value={contact.instagram.handle} />
+            </li>
           </ul>
         </div>
       </div>
