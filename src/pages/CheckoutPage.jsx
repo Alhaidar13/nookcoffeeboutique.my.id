@@ -1,17 +1,27 @@
 import { useEffect, useMemo, useState } from 'react'
 import Icon from '../components/Icon.jsx'
 import { useCart } from '../context/CartContext.jsx'
-import { getProduct, getVariant, minQtyFor } from '../data/catalog.js'
+import { comparePrice, getProduct, getVariant, minQtyFor } from '../data/catalog.js'
 import { formatRupiah, payment } from '../data/content.js'
 import { downloadReceipt, whatsappLink } from '../utils/receipt.js'
+import { createOrder, getOrderStatus, supabaseEnabled } from '../lib/supabase.js'
 
 const CUSTOMER_KEY = 'nook-checkout-customer'
 const ORDER_KEY = 'nook-last-order'
 const STEPS = [
-  { id: 1, label: 'Data Pengiriman' },
-  { id: 2, label: 'Pembayaran' },
-  { id: 3, label: 'Selesai' },
+  { id: 1, label: 'Data Pengiriman', short: 'Data' },
+  { id: 2, label: 'Pembayaran', short: 'Bayar' },
+  { id: 3, label: 'Verifikasi', short: 'Verifikasi' },
 ]
+
+// Status pembayaran (sama dengan kolom payment_status di Supabase)
+export const PAYMENT_STATUS = {
+  unpaid: { label: 'Belum Dibayar', tone: 'bg-coffee/10 text-coffee', icon: 'close' },
+  waiting_verification: { label: 'Menunggu Verifikasi', tone: 'bg-amber-100 text-amber-800', icon: 'clock' },
+  paid: { label: 'Pembayaran Diterima', tone: 'bg-emerald-100 text-emerald-800', icon: 'check' },
+  rejected: { label: 'Pembayaran Ditolak', tone: 'bg-red-100 text-red-700', icon: 'close' },
+  refunded: { label: 'Dana Dikembalikan', tone: 'bg-sky-100 text-sky-800', icon: 'back' },
+}
 
 const load = (key, fallback) => {
   try {
@@ -69,40 +79,51 @@ function CopyButton({ value, label = 'Salin' }) {
 }
 
 /* ---------------- Stepper ---------------- */
+// Tiap step punya lebar yang sama (grid 3 kolom) -> lingkaran & label selalu
+// tepat di tengah kolomnya, garis penghubung berada di antara lingkaran.
 function Stepper({ step }) {
+  const progress = ((Math.min(step, STEPS.length) - 1) / (STEPS.length - 1)) * 100
   return (
-    <ol id="checkout-stepper" className="flex items-center gap-2 sm:gap-4" aria-label="Langkah checkout">
-      {STEPS.map((s, i) => {
-        const done = step > s.id
-        const current = step === s.id
-        return (
-          <li key={s.id} className="flex flex-1 items-center gap-2 sm:gap-4">
-            <span className="flex items-center gap-3">
+    <nav aria-label="Langkah checkout" className="mx-auto w-full max-w-2xl">
+      <ol id="checkout-stepper" className="relative grid grid-cols-3">
+        {/* track: dari tengah kolom pertama ke tengah kolom terakhir */}
+        <span className="absolute left-[16.666%] right-[16.666%] top-5 h-[3px] -translate-y-1/2 rounded-full bg-coffee/10" aria-hidden="true" />
+        <span
+          className="absolute left-[16.666%] top-5 h-[3px] -translate-y-1/2 rounded-full bg-coffee transition-[width] duration-700 ease-out"
+          style={{ width: `calc(${progress}% * 0.66666)` }}
+          aria-hidden="true"
+        />
+        {STEPS.map((s) => {
+          const done = step > s.id
+          const current = step === s.id
+          return (
+            <li key={s.id} className="relative z-10 flex flex-col items-center text-center">
               <span
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-heading text-sm font-semibold transition-colors duration-300 ${
-                  done || current ? 'bg-coffee text-cream' : 'bg-cream text-coffee/50'
-                } ${current ? 'ring-4 ring-coffee/15' : ''}`}
+                className={`flex h-10 w-10 items-center justify-center rounded-full font-heading text-sm font-semibold transition-all duration-500 ${
+                  done || current ? 'bg-coffee text-cream' : 'bg-white text-coffee/45 ring-1 ring-coffee/15'
+                } ${current ? 'step-pulse scale-110' : ''}`}
                 aria-current={current ? 'step' : undefined}
               >
                 {done ? <Icon name="check" className="h-5 w-5" strokeWidth={2} /> : s.id}
               </span>
-              <span className={`hidden text-sm font-medium sm:block ${current || done ? 'text-coffee' : 'text-coffee/45'}`}>
-                <span className="block text-[0.65rem] uppercase tracking-[0.2em] text-coffee/45">Step {s.id}</span>
-                {s.label}
+              <span className={`mt-2.5 text-[0.62rem] uppercase tracking-[0.2em] ${current || done ? 'text-coffee/60' : 'text-coffee/35'}`}>Step {s.id}</span>
+              <span className={`text-xs font-medium sm:text-sm ${current || done ? 'text-coffee' : 'text-coffee/45'}`}>
+                <span className="sm:hidden">{s.short}</span>
+                <span className="hidden sm:inline">{s.label}</span>
               </span>
-            </span>
-            {i < STEPS.length - 1 && <span className={`h-px flex-1 ${done ? 'bg-coffee' : 'bg-coffee/15'}`} />}
-          </li>
-        )
-      })}
-    </ol>
+            </li>
+          )
+        })}
+      </ol>
+    </nav>
   )
 }
 
 /* ---------------- Order summary ---------------- */
 function OrderSummary({ lines, total, editable, updateQty, removeItem }) {
+  const savings = lines.reduce((n, l) => n + (l.comparePrice ? (l.comparePrice - l.price) * l.qty : 0), 0)
   return (
-    <aside id="order-summary" className="rounded-3xl bg-white/80 p-6 shadow-[0_20px_50px_-30px_rgba(59,36,24,0.45)] ring-1 ring-coffee/5 sm:p-7 lg:sticky lg:top-28">
+    <aside id="order-summary" className="rounded-3xl bg-white/80 p-5 shadow-[0_20px_50px_-30px_rgba(59,36,24,0.45)] ring-1 ring-coffee/5 sm:p-7 lg:sticky lg:top-28">
       <h2 className="font-heading text-lg font-semibold text-coffee">Ringkasan Pesanan</h2>
       <ul className="mt-5 divide-y divide-coffee/10">
         {lines.map((l) => (
@@ -111,6 +132,7 @@ function OrderSummary({ lines, total, editable, updateQty, removeItem }) {
               <p className="truncate font-heading text-sm font-semibold text-coffee">{l.name}</p>
               <p className="text-xs text-coffee/60">
                 {l.variantLabel} · {formatRupiah(l.price)}
+                {l.comparePrice && <s className="ml-1.5 text-coffee/35">{formatRupiah(l.comparePrice)}</s>}
               </p>
               {editable ? (
                 <div className="mt-2 flex items-center gap-2">
@@ -156,6 +178,12 @@ function OrderSummary({ lines, total, editable, updateQty, removeItem }) {
           <span>Subtotal</span>
           <span>{formatRupiah(total)}</span>
         </div>
+        {savings > 0 && (
+          <div className="flex justify-between font-medium text-red-600">
+            <span>Kamu hemat</span>
+            <span>-{formatRupiah(savings)}</span>
+          </div>
+        )}
         <div className="flex justify-between text-coffee/70">
           <span>Ongkos kirim</span>
           <span className="text-xs">Dikonfirmasi admin via WA</span>
@@ -212,7 +240,7 @@ function StepCustomer({ customer, setCustomer, onNext }) {
     }`
 
   return (
-    <form id="step-customer" onSubmit={submit} noValidate className="rounded-3xl bg-white/80 p-6 ring-1 ring-coffee/5 sm:p-8">
+    <form id="step-customer" onSubmit={submit} noValidate className="rounded-3xl bg-white/80 p-5 ring-1 ring-coffee/5 sm:p-8">
       <h2 className="font-heading text-xl font-semibold text-coffee">Step 1 · Data Pengiriman</h2>
       <p className="mt-1 text-sm text-coffee/60">Lengkapi data di bawah ini untuk pengiriman pesanan Anda.</p>
 
@@ -261,7 +289,7 @@ function StepCustomer({ customer, setCustomer, onNext }) {
         </a>
         <button
           type="submit"
-          className="group inline-flex items-center justify-center gap-3 rounded-full bg-coffee px-8 py-4 text-sm font-medium text-cream transition-all duration-300 hover:-translate-y-0.5 hover:bg-coffee-light hover:shadow-[0_12px_30px_-10px_rgba(59,36,24,0.55)]"
+          className="group inline-flex w-full items-center justify-center gap-3 rounded-full bg-coffee px-6 py-4 sm:w-auto sm:px-8 text-sm font-medium text-cream transition-all duration-300 hover:-translate-y-0.5 hover:bg-coffee-light hover:shadow-[0_12px_30px_-10px_rgba(59,36,24,0.55)]"
         >
           Lanjut ke Pembayaran
           <Icon name="arrow" className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -280,7 +308,7 @@ function MethodCard({ m, selected, onSelect }) {
         selected ? 'border-coffee shadow-[0_20px_50px_-30px_rgba(59,36,24,0.6)]' : 'border-coffee/10 hover:border-coffee/30'
       }`}
     >
-      <button type="button" onClick={onSelect} className="flex w-full items-center gap-4 p-5 text-left sm:p-6" aria-pressed={selected}>
+      <button type="button" onClick={onSelect} className="flex w-full items-center gap-3 p-4 text-left sm:gap-4 sm:p-6" aria-pressed={selected}>
         <span
           className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${
             isGopay ? 'bg-[#00AED6]/10 text-[#00AED6]' : 'bg-[#00A39D]/10 text-[#00A39D]'
@@ -338,7 +366,7 @@ function MethodCard({ m, selected, onSelect }) {
 
 function StepPayment({ method, setMethod, onBack, onPay, total }) {
   return (
-    <section id="step-payment" className="rounded-3xl bg-white/80 p-6 ring-1 ring-coffee/5 sm:p-8">
+    <section id="step-payment" className="rounded-3xl bg-white/80 p-5 ring-1 ring-coffee/5 sm:p-8">
       <h2 className="font-heading text-xl font-semibold text-coffee">Step 2 · Metode Pembayaran</h2>
       <p className="mt-1 text-sm text-coffee/60">Pilih salah satu metode pembayaran di bawah ini.</p>
 
@@ -356,9 +384,9 @@ function StepPayment({ method, setMethod, onBack, onPay, total }) {
           type="button"
           onClick={onPay}
           disabled={!method}
-          className="group inline-flex items-center justify-center gap-3 rounded-full bg-coffee px-8 py-4 text-sm font-medium text-cream transition-all duration-300 hover:-translate-y-0.5 hover:bg-coffee-light hover:shadow-[0_12px_30px_-10px_rgba(59,36,24,0.55)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+          className="group inline-flex w-full items-center justify-center gap-3 rounded-full bg-coffee px-6 py-4 sm:w-auto sm:px-8 text-sm font-medium text-cream transition-all duration-300 hover:-translate-y-0.5 hover:bg-coffee-light hover:shadow-[0_12px_30px_-10px_rgba(59,36,24,0.55)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none"
         >
-          {method ? `Bayar Sekarang · ${formatRupiah(total)}` : 'Pilih metode pembayaran'}
+          <span className="truncate">{method ? `Bayar Sekarang · ${formatRupiah(total)}` : 'Pilih metode pembayaran'}</span>
           <Icon name="arrow" className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </button>
       </div>
@@ -367,7 +395,7 @@ function StepPayment({ method, setMethod, onBack, onPay, total }) {
 }
 
 /* ---------------- Payment pop-up ---------------- */
-function PaymentModal({ method, total, orderId, onClose, onConfirm }) {
+function PaymentModal({ method, total, orderId, onClose, onConfirm, submitting, error }) {
   const m = payment.methods[method]
   const isGopay = method === 'gopay'
   const [agree, setAgree] = useState(false)
@@ -390,9 +418,9 @@ function PaymentModal({ method, total, orderId, onClose, onConfirm }) {
         aria-modal="true"
         aria-labelledby="payment-modal-title"
         onClick={(e) => e.stopPropagation()}
-        className="modal-panel max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-beige shadow-2xl sm:rounded-3xl"
+        className="modal-panel max-h-[92dvh] w-full pb-[env(safe-area-inset-bottom)] max-w-lg overflow-y-auto rounded-t-3xl bg-beige shadow-2xl sm:rounded-3xl"
       >
-        <header className="sticky top-0 z-10 flex items-center justify-between border-b border-coffee/10 bg-beige/95 px-6 py-4 backdrop-blur">
+        <header className="sticky top-0 z-10 flex items-center justify-between border-b border-coffee/10 bg-beige/95 px-5 py-4 backdrop-blur sm:px-6">
           <div>
             <p className="text-[0.65rem] uppercase tracking-[0.2em] text-coffee/50">{orderId}</p>
             <h3 id="payment-modal-title" className="font-heading text-lg font-semibold text-coffee">
@@ -404,7 +432,7 @@ function PaymentModal({ method, total, orderId, onClose, onConfirm }) {
           </button>
         </header>
 
-        <div className="space-y-5 px-6 py-6">
+        <div className="space-y-5 px-5 py-6 sm:px-6">
           {/* Amount */}
           <div className="flex items-center justify-between gap-3 rounded-2xl bg-coffee px-5 py-4 text-cream">
             <div>
@@ -460,25 +488,88 @@ function PaymentModal({ method, total, orderId, onClose, onConfirm }) {
             </span>
           </label>
 
+          {error && (
+            <p role="alert" className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-200">
+              {error}
+            </p>
+          )}
+
           <button
             type="button"
             onClick={onConfirm}
-            disabled={!agree}
+            disabled={!agree || submitting}
             className="flex w-full items-center justify-center gap-2 rounded-full bg-coffee px-8 py-4 text-sm font-medium text-cream transition-all hover:bg-coffee-light disabled:cursor-not-allowed disabled:opacity-45"
           >
-            <Icon name="check" className="h-5 w-5" /> Saya Sudah Bayar
+            {submitting ? (
+              <>
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-cream/40 border-t-cream" /> Mengirim konfirmasi…
+              </>
+            ) : (
+              <>
+                <Icon name="check" className="h-5 w-5" /> Saya Sudah Bayar
+              </>
+            )}
           </button>
+          <p className="text-center text-[0.7rem] leading-relaxed text-coffee/50">
+            Pesanan akan berstatus <strong>Menunggu Verifikasi</strong> sampai admin mengecek pembayaran Anda.
+          </p>
         </div>
       </div>
     </div>
   )
 }
 
-/* ---------------- Step 3: done ---------------- */
-function StepDone({ order, onNewOrder }) {
+/* ---------------- Step 3: menunggu verifikasi ---------------- */
+const POLL_MS = 15000
+
+function StatusBadge({ status }) {
+  const st = PAYMENT_STATUS[status] || PAYMENT_STATUS.waiting_verification
+  return (
+    <span className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold ${st.tone}`}>
+      {status === 'waiting_verification' ? (
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-500 opacity-75" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-500" />
+        </span>
+      ) : (
+        <Icon name={st.icon} className="h-3.5 w-3.5" strokeWidth={2.2} />
+      )}
+      {st.label}
+    </span>
+  )
+}
+
+function StepDone({ order, onNewOrder, onStatus }) {
   const [downloading, setDownloading] = useState(false)
   const [downloaded, setDownloaded] = useState(false)
+  const [checking, setChecking] = useState(false)
+  const [lastCheck, setLastCheck] = useState(null)
   const m = payment.methods[order.method]
+  const status = order.paymentStatus || 'waiting_verification'
+  const isPaid = status === 'paid'
+  const isRejected = status === 'rejected'
+
+  const refresh = async () => {
+    if (!supabaseEnabled || !order.savedToDb) return
+    setChecking(true)
+    try {
+      const res = await getOrderStatus(order.id, order.customer.phone)
+      if (res) onStatus(res)
+      setLastCheck(new Date())
+    } catch {
+      /* jaringan bermasalah, coba lagi nanti */
+    } finally {
+      setChecking(false)
+    }
+  }
+
+  // cek status otomatis selama masih menunggu verifikasi
+  useEffect(() => {
+    if (!supabaseEnabled || !order.savedToDb || status !== 'waiting_verification') return
+    refresh()
+    const t = setInterval(refresh, POLL_MS)
+    return () => clearInterval(t)
+  }, [order.id, status]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDownload = async () => {
     setDownloading(true)
@@ -490,20 +581,59 @@ function StepDone({ order, onNewOrder }) {
     }
   }
 
+  const heading = isPaid ? 'Pembayaran Diterima!' : isRejected ? 'Pembayaran Belum Dapat Diverifikasi' : 'Menunggu Verifikasi Pembayaran'
+  const text = isPaid
+    ? `Terima kasih, ${order.customer.name.split(' ')[0]}! Pembayaran Anda sudah dikonfirmasi admin. Pesanan sedang kami proses.`
+    : isRejected
+      ? 'Admin belum dapat menemukan pembayaran Anda. Silakan hubungi kami via WhatsApp dengan melampirkan bukti transfer.'
+      : `Terima kasih, ${order.customer.name.split(' ')[0]}. Pesanan Anda sudah tercatat. Admin akan mengecek pembayaran Anda secara manual — status akan berubah menjadi "Pembayaran Diterima" setelah diverifikasi.`
+
   return (
-    <section id="step-done" className="mx-auto max-w-2xl rounded-3xl bg-white/80 p-6 text-center ring-1 ring-coffee/5 sm:p-10">
-      <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-coffee text-cream ring-8 ring-coffee/10">
-        <Icon name="check" className="h-10 w-10" strokeWidth={2} />
+    <section id="step-done" className="fade-up mx-auto max-w-2xl rounded-3xl bg-white/80 p-5 text-center ring-1 ring-coffee/5 sm:p-10">
+      <span
+        className={`mx-auto flex h-20 w-20 items-center justify-center rounded-full ring-8 ${
+          isPaid ? 'bg-emerald-600 text-white ring-emerald-100' : isRejected ? 'bg-red-600 text-white ring-red-100' : 'bg-amber-100 text-amber-700 ring-amber-50'
+        }`}
+      >
+        {isPaid ? (
+          <Icon name="check" className="pop-in h-10 w-10" strokeWidth={2} />
+        ) : isRejected ? (
+          <Icon name="close" className="h-10 w-10" strokeWidth={2} />
+        ) : (
+          <Icon name="clock" className="spin-slow h-10 w-10" strokeWidth={1.8} />
+        )}
       </span>
-      <h2 className="mt-6 font-heading text-2xl font-semibold text-coffee sm:text-3xl">Pesanan Berhasil Dibuat!</h2>
-      <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-coffee/65">
-        Terima kasih, {order.customer.name.split(' ')[0]}. Silakan unduh struk pesanan di bawah ini lalu kirimkan ke WhatsApp kami.
-      </p>
+
+      <div className="mt-5">
+        <StatusBadge status={status} />
+      </div>
+      <h2 className="mt-4 font-heading text-2xl font-semibold text-coffee sm:text-3xl">{heading}</h2>
+      <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-coffee/65">{text}</p>
+      {order.adminNote && (
+        <p className="mx-auto mt-3 max-w-md rounded-2xl bg-beige px-4 py-3 text-sm text-coffee">
+          <strong>Catatan admin:</strong> {order.adminNote}
+        </p>
+      )}
+
+      {supabaseEnabled && order.savedToDb && !isPaid && (
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-coffee/55">
+          <button
+            type="button"
+            onClick={refresh}
+            disabled={checking}
+            className="inline-flex items-center gap-1.5 rounded-full border border-coffee/20 px-3.5 py-1.5 font-medium text-coffee transition hover:border-coffee disabled:opacity-60"
+          >
+            <Icon name="refresh" className={`h-3.5 w-3.5 ${checking ? 'animate-spin' : ''}`} />
+            {checking ? 'Mengecek…' : 'Cek status sekarang'}
+          </button>
+          {lastCheck && <span>Terakhir dicek {lastCheck.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>}
+        </div>
+      )}
 
       <dl className="mt-8 grid gap-3 rounded-2xl bg-beige p-5 text-left text-sm sm:grid-cols-2">
         <div>
           <dt className="text-xs text-coffee/55">No. Pesanan</dt>
-          <dd className="font-heading font-semibold text-coffee">{order.id}</dd>
+          <dd className="break-all font-heading font-semibold text-coffee">{order.id}</dd>
         </div>
         <div>
           <dt className="text-xs text-coffee/55">Tanggal</dt>
@@ -517,22 +647,30 @@ function StepDone({ order, onNewOrder }) {
           <dt className="text-xs text-coffee/55">Total</dt>
           <dd className="font-heading text-lg font-semibold text-coffee">{formatRupiah(order.total)}</dd>
         </div>
+        {order.trackingNumber && (
+          <div className="sm:col-span-2">
+            <dt className="text-xs text-coffee/55">No. Resi</dt>
+            <dd className="font-heading font-semibold text-coffee">{order.trackingNumber}</dd>
+          </div>
+        )}
         <div className="sm:col-span-2">
           <dt className="text-xs text-coffee/55">Dikirim ke</dt>
           <dd className="font-medium text-coffee">{order.customer.address}</dd>
         </div>
       </dl>
 
-      <div className="mt-6 rounded-2xl border-2 border-dashed border-coffee/30 p-5 text-left">
-        <p className="flex items-center gap-2 font-heading text-sm font-semibold text-coffee">
-          <Icon name="whatsapp" className="h-5 w-5" /> WAJIB: Kirim struk ke WhatsApp
-        </p>
-        <ol className="mt-3 space-y-1.5 text-sm text-coffee/75">
-          <li>1. Klik <strong>"Download Struk"</strong> untuk menyimpan struk pesanan.</li>
-          <li>2. Klik <strong>"Kirim ke WhatsApp"</strong> — chat ke {payment.whatsappDisplay} akan terbuka.</li>
-          <li>3. Lampirkan struk + bukti transfer, lalu kirim. Pesanan diproses setelah admin memverifikasi.</li>
-        </ol>
-      </div>
+      {!isPaid && (
+        <div className="mt-6 rounded-2xl border-2 border-dashed border-coffee/30 p-5 text-left">
+          <p className="flex items-center gap-2 font-heading text-sm font-semibold text-coffee">
+            <Icon name="whatsapp" className="h-5 w-5" /> Percepat verifikasi
+          </p>
+          <ol className="mt-3 space-y-1.5 text-sm text-coffee/75">
+            <li>1. Klik <strong>"Download Struk"</strong> untuk menyimpan struk pesanan.</li>
+            <li>2. Klik <strong>"Kirim ke WhatsApp"</strong> — chat ke {payment.whatsappDisplay} akan terbuka.</li>
+            <li>3. Lampirkan struk + bukti transfer. Status berubah setelah admin memverifikasi pembayaran.</li>
+          </ol>
+        </div>
+      )}
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         <button
@@ -572,6 +710,8 @@ export default function CheckoutPage() {
   const [method, setMethod] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [pendingId, setPendingId] = useState(null)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   useEffect(() => save(CUSTOMER_KEY, customer), [customer])
   useEffect(() => {
@@ -587,9 +727,12 @@ export default function CheckoutPage() {
           const price = p.prices[i.variant]
           return {
             key: i.key,
+            productId: p.id,
+            variant: i.variant,
             name: p.name,
             variantLabel: getVariant(i.variant)?.label || i.variant,
             price,
+            comparePrice: comparePrice(p, i.variant),
             qty: i.qty,
             minQty: minQtyFor(i.variant),
             subtotal: price * i.qty,
@@ -602,11 +745,14 @@ export default function CheckoutPage() {
 
   const openPayment = () => {
     if (!method) return
+    setSubmitError('')
     setPendingId((id) => id || makeOrderId())
     setModalOpen(true)
   }
 
-  const confirmPaid = () => {
+  // Klik "Saya Sudah Bayar" -> pesanan dicatat dengan status MENUNGGU VERIFIKASI.
+  // Pembayaran TIDAK otomatis dianggap sukses; admin yang mengubah status di Supabase.
+  const confirmPaid = async () => {
     const now = new Date()
     const newOrder = {
       id: pendingId || makeOrderId(),
@@ -614,14 +760,57 @@ export default function CheckoutPage() {
       dateLabel: now.toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' }),
       customer: { ...customer, name: customer.name.trim(), email: customer.email.trim(), phone: customer.phone.trim(), address: customer.address.trim() },
       method,
-      items: lines.map(({ name, variantLabel, price, qty, subtotal }) => ({ name, variantLabel, price, qty, subtotal })),
+      items: lines.map(({ productId, variant, name, variantLabel, price, comparePrice, qty, subtotal }) => ({
+        productId,
+        variant,
+        name,
+        variantLabel,
+        price,
+        comparePrice,
+        qty,
+        subtotal,
+      })),
       total,
+      paymentStatus: 'waiting_verification',
+      savedToDb: false,
     }
+
+    if (supabaseEnabled) {
+      setSubmitting(true)
+      setSubmitError('')
+      try {
+        const res = await createOrder(newOrder)
+        newOrder.savedToDb = true
+        if (res?.payment_status) newOrder.paymentStatus = res.payment_status
+      } catch (err) {
+        setSubmitError(`Gagal mengirim pesanan (${err.message}). Periksa koneksi internet lalu coba lagi.`)
+        setSubmitting(false)
+        return
+      }
+      setSubmitting(false)
+    }
+
     save(ORDER_KEY, newOrder)
     setOrder(newOrder)
     setModalOpen(false)
     clearCart()
     setStep(3)
+  }
+
+  const applyStatus = (res) => {
+    setOrder((prev) => {
+      if (!prev) return prev
+      const next = {
+        ...prev,
+        paymentStatus: res.payment_status || prev.paymentStatus,
+        orderStatus: res.order_status,
+        trackingNumber: res.tracking_number || null,
+        adminNote: res.admin_note || null,
+        total: res.total ?? prev.total,
+      }
+      save(ORDER_KEY, next)
+      return next
+    })
   }
 
   const newOrder = () => {
@@ -636,18 +825,18 @@ export default function CheckoutPage() {
   const emptyCart = step < 3 && lines.length === 0
 
   return (
-    <section id="checkout-page" className="min-h-screen bg-beige px-5 pb-24 pt-28 sm:px-8 sm:pt-32">
+    <section id="checkout-page" className="min-h-screen bg-beige px-4 pb-24 pt-24 sm:px-8 sm:pt-32">
       <div className="mx-auto max-w-6xl">
-        <header className="mb-10">
+        <header className="mb-8 text-center sm:mb-10">
           <span className="inline-flex items-center gap-3 text-xs font-medium uppercase tracking-[0.3em] text-coffee/60">
-            <span className="h-px w-8 bg-coffee/40" /> Checkout
+            <span className="h-px w-8 bg-coffee/40" /> Checkout <span className="h-px w-8 bg-coffee/40" />
           </span>
           <h1 className="mt-3 font-heading text-3xl font-semibold tracking-tight text-coffee sm:text-4xl">Pembayaran</h1>
         </header>
 
         {emptyCart ? (
-          <div id="empty-cart" className="flex flex-col items-center rounded-3xl bg-white/80 px-6 py-20 text-center ring-1 ring-coffee/5">
-            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-cream text-coffee">
+          <div id="empty-cart" className="fade-up flex flex-col items-center rounded-3xl bg-white/80 px-6 py-20 text-center ring-1 ring-coffee/5">
+            <span className="bag-float flex h-16 w-16 items-center justify-center rounded-full bg-cream text-coffee">
               <Icon name="bag" className="h-8 w-8" />
             </span>
             <h2 className="mt-5 font-heading text-xl font-semibold text-coffee">Keranjang Anda masih kosong</h2>
@@ -658,15 +847,15 @@ export default function CheckoutPage() {
           </div>
         ) : (
           <>
-            <div className="mb-10">
+            <div className="mb-8 sm:mb-12">
               <Stepper step={step} />
             </div>
 
             {step === 3 && order ? (
-              <StepDone order={order} onNewOrder={newOrder} />
+              <StepDone order={order} onNewOrder={newOrder} onStatus={applyStatus} />
             ) : (
-              <div className="grid gap-8 lg:grid-cols-[1fr_24rem]">
-                <div>
+              <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_24rem]">
+                <div key={step} className="fade-up min-w-0">
                   {step === 1 && <StepCustomer customer={customer} setCustomer={setCustomer} onNext={() => setStep(2)} />}
                   {step === 2 && (
                     <StepPayment method={method} setMethod={setMethod} onBack={() => setStep(1)} onPay={openPayment} total={total} />
@@ -680,7 +869,15 @@ export default function CheckoutPage() {
       </div>
 
       {modalOpen && (
-        <PaymentModal method={method} total={total} orderId={pendingId} onClose={() => setModalOpen(false)} onConfirm={confirmPaid} />
+        <PaymentModal
+          method={method}
+          total={total}
+          orderId={pendingId}
+          onClose={() => !submitting && setModalOpen(false)}
+          onConfirm={confirmPaid}
+          submitting={submitting}
+          error={submitError}
+        />
       )}
     </section>
   )

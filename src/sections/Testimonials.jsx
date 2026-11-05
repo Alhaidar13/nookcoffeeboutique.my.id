@@ -18,7 +18,7 @@ function Stars({ count = 5 }) {
 function TestimonialCard({ t }) {
   const initials = t.name.split(' ').map((n) => n[0]).slice(0, 2).join('')
   return (
-    <article className="testimonial-card flex w-[19rem] shrink-0 flex-col justify-between rounded-3xl bg-white/70 p-7 shadow-[0_20px_50px_-30px_rgba(59,36,24,0.45)] ring-1 ring-coffee/5 sm:w-[23rem]">
+    <article className="testimonial-card flex w-[16.5rem] shrink-0 flex-col justify-between rounded-3xl bg-white/70 p-6 sm:p-7 shadow-[0_20px_50px_-30px_rgba(59,36,24,0.45)] ring-1 ring-coffee/5 sm:w-[23rem]">
       <div>
         <Stars count={t.rating} />
         <blockquote className="mt-5 text-[0.95rem] leading-relaxed text-coffee/80">“{t.quote}”</blockquote>
@@ -91,7 +91,7 @@ export default function Testimonials() {
   const rowB = testimonials.slice(half)
 
   return (
-    <section id="testimonials" className="overflow-hidden bg-cream/60 py-24 sm:py-32">
+    <section id="testimonials" className="overflow-hidden bg-cream/60 py-20 sm:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <Reveal>
           <SectionHeading

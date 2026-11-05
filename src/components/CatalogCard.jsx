@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import CoffeeBag from './CoffeeBag.jsx'
+import ProductVisual from './ProductVisual.jsx'
+import PriceTag from './PriceTag.jsx'
 import Icon from './Icon.jsx'
 import VariantSelector from './VariantSelector.jsx'
-import { formatRupiah } from '../data/content.js'
-import { availableVariants, defaultVariantFor, getCategory, minQtyFor, variants } from '../data/catalog.js'
+import { availableVariants, defaultVariantFor, discountPercent, getCategory, minQtyFor, variants } from '../data/catalog.js'
 
 export const variantWeight = (id) => variants.find((v) => v.id === id)?.label || id
 
@@ -26,21 +26,28 @@ export default function CatalogCard({ product, defaultVariant }) {
           className="absolute inset-0 h-full w-full object-cover opacity-20 mix-blend-multiply transition-transform duration-700 ease-out group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-cream via-cream/40 to-transparent" />
-        <CoffeeBag
-          product={{ ...product, weight: variantWeight(variant) }}
-          className="relative mx-auto h-full w-auto py-5 drop-shadow-xl transition-transform duration-700 ease-out group-hover:-translate-y-1.5 group-hover:scale-[1.03]"
+        <ProductVisual
+          product={product}
+          variant={variant}
+          weight={variantWeight(variant)}
+          className="bag-float relative mx-auto h-full w-auto py-5 drop-shadow-xl transition-transform duration-700 ease-out group-hover:-translate-y-1.5 group-hover:scale-[1.04] group-hover:-rotate-2"
+          imgClassName="transition-transform duration-700 ease-out group-hover:scale-105"
         />
+        <span className="shine pointer-events-none absolute inset-0" aria-hidden="true" />
         <span className="absolute left-4 top-4 rounded-full bg-white/85 px-3 py-1 text-[0.6rem] font-medium uppercase tracking-[0.2em] text-coffee backdrop-blur">
           {product.bean}
         </span>
-        {product.bestSeller && (
-          <span className="absolute right-4 top-4 rounded-full bg-coffee px-3 py-1 text-[0.6rem] font-medium uppercase tracking-[0.2em] text-cream">
-            Best Seller
-          </span>
-        )}
+        <span className="absolute right-4 top-4 flex flex-col items-end gap-1.5">
+          {product.bestSeller && (
+            <span className="rounded-full bg-coffee px-3 py-1 text-[0.6rem] font-medium uppercase tracking-[0.2em] text-cream">Best Seller</span>
+          )}
+          {discountPercent(product, variant) > 0 && (
+            <span className="badge-pulse rounded-full bg-red-600 px-2.5 py-1 text-[0.62rem] font-semibold text-white">Hemat {discountPercent(product, variant)}%</span>
+          )}
+        </span>
       </a>
 
-      <div className="flex flex-1 flex-col p-5 sm:p-6">
+      <div className="flex flex-1 flex-col p-4 sm:p-6">
         <p className="flex items-center gap-1.5 text-[0.7rem] uppercase tracking-[0.2em] text-coffee/55">
           <Icon name="pin" className="h-3.5 w-3.5" />
           {product.origin}
@@ -67,7 +74,7 @@ export default function CatalogCard({ product, defaultVariant }) {
               onChange={setVariant}
               options={options}
               label={`Size for ${product.name}`}
-              className="w-full justify-between [&>button]:flex-1"
+              className="w-full justify-between overflow-x-auto [scrollbar-width:none] [&>button]:flex-1"
             />
           ) : (
             <p className="flex items-center justify-between rounded-full bg-beige px-4 py-1.5 text-xs font-medium text-coffee">
@@ -80,10 +87,7 @@ export default function CatalogCard({ product, defaultVariant }) {
         <div className="mt-auto flex items-end justify-between gap-3 pt-5">
           <p className="flex min-w-0 flex-col">
             <span className="text-[0.62rem] uppercase tracking-[0.2em] text-coffee/50">Price</span>
-            <span className="whitespace-nowrap font-heading text-base font-semibold text-coffee sm:text-lg">
-              {formatRupiah(product.prices[variant])}
-              {variant === 'sachet' && <span className="text-xs font-normal text-coffee/55"> /sachet</span>}
-            </span>
+            <PriceTag product={product} variant={variant} showBadge={false} className="flex-col !items-start !gap-0" />
             {minQty > 1 && <span className="mt-0.5 text-[0.68rem] text-amber-700">Min. order {minQty} sachets</span>}
           </p>
           <a

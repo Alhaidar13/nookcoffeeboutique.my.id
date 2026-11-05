@@ -8,7 +8,8 @@ import { buildHash, replaceHash } from '../hooks/useHashRoute.js'
 
 const normalize = (s) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 
-const SIZE_OPTIONS = [{ id: 'all', label: 'All' }, ...variants]
+// box hadiah tidak ditampilkan di filter ukuran agar ringkas
+const SIZE_OPTIONS = [{ id: 'all', label: 'All' }, ...variants.filter((v) => !v.id.startsWith('box'))]
 const hasSize = (product, size) => size === 'all' || product.prices[size] != null
 
 const matches = (product, q) => {
@@ -74,12 +75,12 @@ export default function CatalogPage({ query = {} }) {
   const tabs = [{ id: 'all', name: 'All Coffee' }, ...categories]
 
   return (
-    <div id="catalog-page" className="bg-beige pt-20">
+    <div id="catalog-page" className="bg-beige pt-[4.5rem] sm:pt-20">
       {/* Page header */}
       <section id="catalog-hero" className="relative overflow-hidden bg-coffee text-cream">
         <img src="/static/images/hero-beans.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-20" />
         <div className="absolute inset-0 bg-gradient-to-r from-coffee via-coffee/90 to-coffee/50" />
-        <div className="relative mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20 lg:py-24">
+        <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-8 sm:py-20 lg:py-24">
           <nav aria-label="Breadcrumb" className="text-xs text-cream/60">
             <ol className="flex items-center gap-2">
               <li>
@@ -93,18 +94,19 @@ export default function CatalogPage({ query = {} }) {
             <span className="h-px w-8 bg-cream/50" />
             Product Catalog
           </span>
-          <h1 className="mt-5 max-w-3xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+          <h1 className="fade-up mt-5 max-w-3xl text-[2rem] font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
             Explore Our Coffee Collection.
           </h1>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-cream/75 sm:text-lg">
-            From single-origin Nusantara arabica to rare Kopi Luwak and bold Indonesian robusta — find the bag that fits your ritual.
+          <p className="fade-up mt-4 max-w-xl text-sm leading-relaxed text-cream/75 sm:mt-5 sm:text-lg" style={{ animationDelay: '0.15s' }}>
+            Dari espresso house blend, single origin Nusantara, robusta pilihan, hingga Kopi Luwak Liar Gayo — temukan kopi yang pas untuk ritualmu.
           </p>
 
           {/* Search */}
           <form
+            style={{ animationDelay: '0.3s' }}
             role="search"
             onSubmit={(e) => e.preventDefault()}
-            className="mt-10 flex max-w-2xl items-center gap-3 rounded-full bg-cream p-2 pl-5 shadow-[0_24px_50px_-24px_rgba(0,0,0,0.6)]"
+            className="fade-up mt-8 flex max-w-2xl items-center gap-3 rounded-full bg-cream p-1.5 pl-4 sm:mt-10 sm:p-2 sm:pl-5 shadow-[0_24px_50px_-24px_rgba(0,0,0,0.6)]"
           >
             <Icon name="search" className="h-5 w-5 shrink-0 text-coffee/60" />
             <label htmlFor="product-search" className="sr-only">Search product</label>
@@ -134,9 +136,9 @@ export default function CatalogPage({ query = {} }) {
       </section>
 
       {/* Sticky toolbar: category filter + variant selector */}
-      <div id="catalog-toolbar" className="sticky top-20 z-30 border-b border-coffee/10 bg-beige/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-4 sm:px-8 lg:flex-row lg:items-center lg:justify-between">
-          <div role="tablist" aria-label="Product categories" className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:mx-0 sm:px-0 lg:pb-0">
+      <div id="catalog-toolbar" className="sticky top-16 z-30 border-b border-coffee/10 bg-beige/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:gap-4 sm:px-8 sm:py-4 lg:flex-row lg:items-center lg:justify-between">
+          <div role="tablist" aria-label="Product categories" className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
             {tabs.map((t) => {
               const active = activeCategory === t.id
               return (
@@ -161,15 +163,15 @@ export default function CatalogPage({ query = {} }) {
             })}
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-medium uppercase tracking-[0.2em] text-coffee/55">Size</span>
-            <VariantSelector value={size} onChange={setSize} options={SIZE_OPTIONS} label="Filter by size" className="bg-white ring-1 ring-coffee/10" />
+          <div className="-mx-4 flex items-center gap-3 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
+            <span className="shrink-0 text-xs font-medium uppercase tracking-[0.2em] text-coffee/55">Size</span>
+            <VariantSelector value={size} onChange={setSize} options={SIZE_OPTIONS} label="Filter by size" className="shrink-0 bg-white ring-1 ring-coffee/10" />
           </div>
         </div>
       </div>
 
       {/* Results */}
-      <div className="mx-auto max-w-7xl px-5 pb-24 pt-10 sm:px-8 sm:pb-32">
+      <div className="mx-auto max-w-7xl px-4 pb-24 pt-8 sm:px-8 sm:pb-32 sm:pt-10">
         <p className="text-sm text-coffee/60" aria-live="polite">
           {search ? (
             <>
@@ -209,7 +211,7 @@ export default function CatalogPage({ query = {} }) {
           groups
             .filter((g) => g.items.length > 0)
             .map((group) => (
-              <section key={group.id} id={`category-${group.id}`} className="catalog-group mt-14 first-of-type:mt-10" aria-labelledby={`heading-${group.id}`}>
+              <section key={group.id} id={`category-${group.id}`} className="catalog-group mt-12 first-of-type:mt-8 sm:mt-14" aria-labelledby={`heading-${group.id}`}>
                 <Reveal>
                   <header className="flex flex-col gap-5 border-b border-coffee/10 pb-6 sm:flex-row sm:items-end sm:justify-between">
                     <div className="flex items-center gap-5">
@@ -218,7 +220,7 @@ export default function CatalogPage({ query = {} }) {
                       </figure>
                       <div>
                         <span className="text-[0.7rem] font-medium uppercase tracking-[0.3em] text-coffee/55">{group.eyebrow}</span>
-                        <h2 id={`heading-${group.id}`} className="mt-1 text-2xl font-semibold tracking-tight text-coffee sm:text-3xl">
+                        <h2 id={`heading-${group.id}`} className="mt-1 text-[1.4rem] font-semibold tracking-tight text-coffee sm:text-3xl">
                           {group.name}
                         </h2>
                         <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-coffee/65">{group.description}</p>
@@ -245,9 +247,9 @@ export default function CatalogPage({ query = {} }) {
                   </header>
                 </Reveal>
 
-                <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <ul className="mt-6 grid gap-5 sm:mt-8 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
                   {group.items.map((p, i) => (
-                    <Reveal as="li" key={p.id} delay={(i % 4) * 70}>
+                    <Reveal as="li" key={p.id} delay={(i % 4) * 80} variant="zoom">
                       <CatalogCard product={p} defaultVariant={size === 'all' ? undefined : size} />
                     </Reveal>
                   ))}

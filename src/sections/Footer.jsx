@@ -29,7 +29,7 @@ export default function Footer() {
   const year = new Date().getFullYear()
   return (
     <footer id="site-footer" className="bg-coffee text-cream">
-      <div className="mx-auto grid max-w-7xl gap-12 px-5 py-16 sm:px-8 md:grid-cols-2 md:py-20 lg:grid-cols-12">
+      <div className="mx-auto grid max-w-7xl gap-10 px-5 pb-28 pt-14 sm:px-8 sm:gap-12 md:grid-cols-2 md:py-20 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <Logo tone="light" />
           <p className="mt-6 max-w-sm text-sm leading-relaxed text-cream/65">{brand.description}</p>

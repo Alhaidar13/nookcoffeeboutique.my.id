@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import Icon from '../components/Icon.jsx'
-import CoffeeBag from '../components/CoffeeBag.jsx'
+import ProductVisual from '../components/ProductVisual.jsx'
+import PriceTag from '../components/PriceTag.jsx'
 import RoastMeter from '../components/RoastMeter.jsx'
 import VariantSelector from '../components/VariantSelector.jsx'
 import CatalogCard, { variantWeight } from '../components/CatalogCard.jsx'
 import { formatRupiah } from '../data/content.js'
-import { availableVariants, catalog, defaultVariantFor, getCategory, getProduct, minQtyFor, variants } from '../data/catalog.js'
+import { availableVariants, catalog, comparePrice, defaultVariantFor, getCategory, getProduct, minQtyFor, variants } from '../data/catalog.js'
 import { buildHash, replaceHash } from '../hooks/useHashRoute.js'
 import { useCart } from '../context/CartContext.jsx'
 
@@ -62,7 +63,7 @@ export default function ProductDetailPage({ id, query = {} }) {
   return (
     <div id="product-detail-page" className="bg-beige pt-20">
       {/* Breadcrumb */}
-      <nav aria-label="Breadcrumb" className="mx-auto max-w-7xl px-5 pt-8 sm:px-8">
+      <nav aria-label="Breadcrumb" className="mx-auto max-w-7xl px-4 pt-6 sm:px-8 sm:pt-8">
         <ol className="flex flex-wrap items-center gap-2 text-xs text-coffee/55">
           <li><a href="#home" className="hover:text-coffee">Home</a></li>
           <li aria-hidden="true"><Icon name="chevron" className="h-3 w-3" /></li>
@@ -74,18 +75,21 @@ export default function ProductDetailPage({ id, query = {} }) {
         </ol>
       </nav>
 
-      <section id="product-overview" className="mx-auto grid max-w-7xl gap-10 px-5 pb-20 pt-8 sm:px-8 lg:grid-cols-12 lg:gap-14 lg:pb-28">
+      <section id="product-overview" className="mx-auto grid max-w-7xl gap-8 px-4 pb-28 pt-6 sm:gap-10 sm:pt-8 sm:px-8 lg:grid-cols-12 lg:gap-14 lg:pb-28">
         {/* Visual */}
         <div className="lg:col-span-6">
           <div className="lg:sticky lg:top-28">
             <figure className="relative aspect-square overflow-hidden rounded-[2rem] bg-cream">
               <img src={category.image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-25 mix-blend-multiply" />
               <div className="absolute inset-0 bg-gradient-to-t from-cream via-cream/30 to-transparent" />
-              <CoffeeBag
-                key={variant}
-                product={{ ...product, weight: variantWeight(variant) }}
-                className="relative mx-auto h-full w-auto py-10 drop-shadow-2xl"
-              />
+              <div key={variant} className="pop-in relative h-full">
+                <ProductVisual
+                  product={product}
+                  variant={variant}
+                  weight={variantWeight(variant)}
+                  className="bag-float relative mx-auto h-full w-auto py-8 drop-shadow-2xl sm:py-10"
+                />
+              </div>
               <span className="absolute left-5 top-5 rounded-full bg-white/85 px-3 py-1 text-[0.65rem] font-medium uppercase tracking-[0.2em] text-coffee backdrop-blur">
                 {category.name}
               </span>
@@ -98,7 +102,7 @@ export default function ProductDetailPage({ id, query = {} }) {
 
             {/* Variant thumbnails */}
             {options.length > 1 && (
-            <ul className={`mt-4 grid gap-4 ${options.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`} aria-label="Size previews">
+            <ul className={`mt-4 grid gap-2 sm:gap-4 ${options.length === 2 ? 'grid-cols-2' : options.length >= 4 ? 'grid-cols-4' : 'grid-cols-3'}`} aria-label="Size previews">
               {options.map((v) => (
                 <li key={v.id}>
                   <button
@@ -109,7 +113,9 @@ export default function ProductDetailPage({ id, query = {} }) {
                     }`}
                     aria-label={`Preview ${v.label}`}
                   >
-                    <CoffeeBag product={{ ...product, id: `${product.id}-${v.id}`, weight: variantWeight(v.id) }} className="h-20 w-auto sm:h-24" />
+                    <span className="flex h-16 w-full items-center justify-center overflow-hidden rounded-xl sm:h-24">
+                      <ProductVisual product={{ ...product, id: product.id }} variant={v.id} weight={variantWeight(v.id)} className="h-16 w-auto sm:h-24" />
+                    </span>
                     <span className="mt-1 text-xs font-medium text-coffee">{v.label}</span>
                   </button>
                 </li>
@@ -125,23 +131,31 @@ export default function ProductDetailPage({ id, query = {} }) {
             <span className="h-px w-8 bg-coffee/40" />
             {category.name}
           </a>
-          <h1 className="mt-4 text-4xl font-semibold leading-tight tracking-tight text-coffee sm:text-5xl">{product.name}</h1>
+          <h1 className="mt-4 text-3xl font-semibold leading-tight tracking-tight text-coffee sm:text-5xl">{product.name}</h1>
           <p className="mt-3 flex items-center gap-1.5 text-sm text-coffee/60">
             <Icon name="pin" className="h-4 w-4" />
             {product.origin}
             <span className="ml-2 rounded-full bg-beige px-2.5 py-0.5 text-xs font-medium text-coffee">{product.bean}</span>
           </p>
 
-          <p className="mt-6 text-lg leading-relaxed text-coffee/80">{product.short}</p>
+          <p className="mt-5 text-base leading-relaxed text-coffee/80 sm:mt-6 sm:text-lg">{product.short}</p>
 
           {/* Price */}
-          <div className="mt-8 flex items-end gap-3 border-y border-coffee/10 py-6">
-            <span className="font-heading text-4xl font-semibold text-coffee" aria-live="polite">{formatRupiah(price)}</span>
-            <span className="pb-1 text-sm text-coffee/55">/ {selected.label} · {selected.detail}</span>
+          <div className="mt-8 border-y border-coffee/10 py-6">
+            <div className="flex flex-wrap items-end gap-x-3 gap-y-1" aria-live="polite">
+              <PriceTag product={product} variant={variant} size="lg" />
+            </div>
+            <p className="mt-1.5 text-sm text-coffee/55">/ {selected.label} · {selected.detail}</p>
+            {comparePrice(product, variant) && (
+              <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700">
+                <span className="h-1.5 w-1.5 animate-ping rounded-full bg-red-500" />
+                Promo — hemat {formatRupiah(comparePrice(product, variant) - price)}
+              </p>
+            )}
           </div>
 
           {/* Variant selector */}
-          <VariantSelector size="lg" value={variant} onChange={setVariant} prices={product.prices} options={options} label="Choose size" className="mt-8" />
+          <VariantSelector size="lg" value={variant} onChange={setVariant} prices={product.prices} compare={product.compare} options={options} label="Choose size" className="mt-8" />
 
           {/* Qty + CTA */}
           <div className="mt-8 flex flex-col gap-4 sm:flex-row">
@@ -260,10 +274,33 @@ export default function ProductDetailPage({ id, query = {} }) {
         </div>
       </section>
 
+      {/* Mobile sticky add-to-bag bar */}
+      <div id="mobile-buy-bar" className="fixed inset-x-0 bottom-0 z-40 border-t border-coffee/10 bg-beige/95 px-4 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-3 backdrop-blur-md lg:hidden">
+        <div className="mx-auto flex max-w-xl items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[0.7rem] text-coffee/60">{product.name} · {selected.label} × {qty}</p>
+            <PriceTag product={product} variant={variant} qty={qty} size="sm" showBadge={false} />
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              if (belowMin) return
+              addItem(product, variant, qty)
+              setAdded(true)
+            }}
+            disabled={belowMin}
+            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-coffee px-5 py-3 text-sm font-medium text-cream shadow-lg transition active:scale-95 disabled:opacity-50"
+          >
+            <Icon name={added ? 'check' : 'bag'} className="h-4 w-4" />
+            {added ? 'Ditambahkan' : belowMin ? `Min. ${minQty}` : 'Add to Bag'}
+          </button>
+        </div>
+      </div>
+
       {/* Related */}
       {related.length > 0 && (
-        <section id="related-products" className="bg-white py-20 sm:py-24">
-          <div className="mx-auto max-w-7xl px-5 sm:px-8">
+        <section id="related-products" className="bg-white pb-32 pt-16 sm:py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-8">
             <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <span className="inline-flex items-center gap-3 text-xs font-medium uppercase tracking-[0.3em] text-coffee/60">
@@ -277,7 +314,7 @@ export default function ProductDetailPage({ id, query = {} }) {
                 <Icon name="arrow" className="h-4 w-4" />
               </a>
             </header>
-            <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <ul className="mt-10 grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
               {related.map((p) => (
                 <li key={p.id}>
                   <CatalogCard product={p} defaultVariant={variant} />

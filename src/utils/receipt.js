@@ -85,7 +85,8 @@ function draw(ctx, order, measureOnly = false) {
   row('Metode Bayar', method.name)
   if (order.method === 'bsi') row('No. Rekening', `BSI ${method.account}`)
   else row('Merchant', method.merchant)
-  row('Status', 'Pesanan berhasil dibuat', { bold: true })
+  const STATUS_LABEL = { paid: 'Pembayaran diterima', rejected: 'Pembayaran ditolak', refunded: 'Dana dikembalikan' }
+  row('Status', STATUS_LABEL[order.paymentStatus] || 'Menunggu verifikasi admin', { bold: true })
   divider()
 
   title('Data Pemesan')
@@ -202,7 +203,7 @@ export async function downloadReceipt(order) {
 export function whatsappLink(order) {
   const method = payment.methods[order.method]
   const lines = [
-    `Halo Nook Coffee, saya sudah melakukan pembayaran.`,
+    `Halo Nook Coffee, saya sudah melakukan pembayaran dan mohon diverifikasi.`,
     ``,
     `*No. Pesanan:* ${order.id}`,
     `*Nama:* ${order.customer.name}`,

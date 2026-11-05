@@ -1,4 +1,4 @@
-import { catalog } from './catalog.js'
+import { catalog, defaultVariantFor, getVariant } from './catalog.js'
 
 export const brand = {
   name: 'Nook',
@@ -15,10 +15,13 @@ export const navLinks = [
   { label: 'Contact', href: '#site-footer' },
 ]
 
-// Featured products on the homepage are derived from the catalogue (250g bag)
+// Featured products on the homepage are derived from the catalogue
 export const products = catalog
   .filter((p) => p.featured)
-  .map((p) => ({ ...p, weight: '250g', price: p.prices['250g'] }))
+  .map((p) => {
+    const variant = defaultVariantFor(p)
+    return { ...p, variant, weight: getVariant(variant)?.label || variant, price: p.prices[variant] }
+  })
 
 export const features = [
   {
@@ -80,7 +83,7 @@ export const payment = {
         'Pilih menu "Bayar" atau "Scan QR", lalu arahkan kamera ke kode QRIS (atau unduh QR lalu unggah dari galeri).',
         'Pastikan nama merchant "MUHAMMAD FIKRI AL HAIDAR" dan masukkan nominal sesuai total pembayaran.',
         'Konfirmasi dengan PIN, lalu simpan bukti transfer.',
-        'Klik "Saya Sudah Bayar" untuk mendapatkan struk pesanan.',
+        'Klik "Saya Sudah Bayar" — pesanan berstatus Menunggu Verifikasi sampai admin mengecek pembayaran.',
       ],
     },
     bsi: {
@@ -96,7 +99,7 @@ export const payment = {
         'ATM BSI: pilih "Menu Lainnya" › "Transfer" › "Rekening BSI", masukkan nomor 7268050897.',
         'Dari bank lain: pilih "Transfer Antar Bank", pilih Bank Syariah Indonesia (kode 451), masukkan nomor 7268050897.',
         'Masukkan nominal tepat sesuai total pembayaran, periksa nama penerima, lalu konfirmasi.',
-        'Simpan bukti transfer dan klik "Saya Sudah Bayar" untuk mendapatkan struk pesanan.',
+        'Simpan bukti transfer lalu klik "Saya Sudah Bayar" — admin akan memverifikasi pembayaran Anda.',
       ],
     },
   },

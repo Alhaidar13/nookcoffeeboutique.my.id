@@ -2,132 +2,164 @@
 
 ## Project Overview
 - **Name**: Nook Coffee Boutique (nama brand diatur di `src/data/content.js`)
-- **Goal**: Website premium untuk brand specialty coffee yang menjual coffee beans secara online
-- **Design direction**: Premium boutique · Modern minimalist · Warm & earthy · Editorial
+- **Goal**: Website toko online untuk brand specialty coffee
+- **Tech Stack**: React 19 + Vite + Tailwind CSS v4, di-deploy sebagai static site di Cloudflare Pages. Database pesanan memakai **Supabase**
 
 ## URLs
 - **GitHub**: https://github.com/Alhaidar13/nookcoffeeboutique.my.id
 - **Production**: belum di-deploy
 
-## Fitur yang Sudah Selesai
-### Homepage
-1. **Navbar**: logo Nook, menu Home/Shop/About/Contact, counter keranjang yang berfungsi, menu mobile
-2. **Hero**, **Brand Introduction**, **Featured Coffee** (3 produk), **Why Choose Us**, **Brand CTA**, **Footer**
-3. Tombol **View All Coffee**, menu **Shop**, dan **Shop Coffee Beans** membuka halaman All Coffee
+---
 
-### All Coffee / Product Catalog (`#/coffee`)
-- **Product Category Filter**: tab All Coffee · Khas Nusantara (Arabika, 23 origin) · Kopi Luwak (Robusta, 1) · Robusta (4), masing-masing dengan jumlah produk
-- **Pengelompokan per kategori**: produk selalu tampil per kategori dengan header sendiri (gambar, deskripsi, jumlah produk, link "See only …"), tidak pernah dicampur dalam satu daftar
-- **Filter ukuran** di toolbar (All / Sachet / 100g / 150g / 250g): hanya menampilkan kopi yang tersedia di ukuran tersebut
-- **Selector ukuran per kartu**: hanya menampilkan ukuran yang benar-benar dijual untuk origin tersebut; harga ikut berubah
-- **Daftar harga**:
-  | Kategori | Ukuran | Harga |
-  |---|---|---|
-  | Khas Nusantara (Arabika) | Sachet | Rp15.000 / sachet (**min. order 5 sachet**) |
-  | Khas Nusantara (Arabika) | 150g | Rp65.000 |
-  | Khas Nusantara (Arabika) | 250g | Rp85.000 |
-  | Kopi Luwak (Robusta) | 100g | Rp215.000 |
-  | Robusta | 250g | Rp105.000 |
-- **Product Grid Layout**: grid kartu responsif (1/2/3/4 kolom) dengan tinggi kartu yang seragam
-- **Product Card**: gambar kemasan, kategori, asal, nama, deskripsi singkat, flavor notes, harga, tombol **View Detail**
-- **Search Product**: mencari berdasarkan nama, asal, flavor notes, roast, proses, atau metode seduh; mendukung banyak kata kunci, shortcut `/`, tombol clear, dan tampilan "No coffee found"
-- Toolbar filter tetap terlihat saat di-scroll (sticky); status filter tersimpan di URL sehingga bisa dibagikan
+## Mau edit sesuatu? Ini file-nya
+
+| Yang mau diubah | File |
+|---|---|
+| **Gambar produk** | `src/data/productImages.js` + taruh fotonya di `public/static/images/products/` |
+| Harga, varian, produk baru | `src/data/catalog.js` → tabel `PRODUCTS` |
+| Keuntungan per produk (Rp20.000) | `src/data/catalog.js` → `MARGIN` |
+| Harga sachet | `src/data/catalog.js` → `SACHET_PRICE` dan daftar `SACHET` |
+| Harga coret / diskon | `src/data/catalog.js` → `STRIKE_PRICE` |
+| Deskripsi rasa, asal, roast | `src/data/catalog.js` → `PROFILES` |
+| Gambar latar kategori | `src/data/catalog.js` → `categories[].image` |
+| Gambar hero / about / CTA | `public/static/images/` (ganti file dengan nama yang sama) |
+| Rekening BSI, QRIS, WhatsApp | `src/data/content.js` → `payment` & `contact` |
+| Testimoni | `src/data/content.js` → `testimonials` |
+| Database pesanan | `supabase/schema.sql` |
+
+### Cara mengganti gambar produk
+1. Upload fotonya ke folder `public/static/images/products/`, misalnya `gayo-highland.jpg`. Disarankan rasio 1:1 atau 4:5, ukuran maksimal sekitar 300KB.
+2. Buka `src/data/productImages.js` dan tambahkan:
+   ```js
+   export const PRODUCT_IMAGES = {
+     'gayo-highland': '/static/images/products/gayo-highland.jpg',
+     'gayo-highland:1kg': '/static/images/products/gayo-1kg.jpg', // opsional, khusus varian 1kg
+   }
+   ```
+3. Build/deploy ulang. Produk yang tidak terdaftar otomatis memakai ilustrasi kemasan kopi.
+
+ID produk bisa dilihat di `src/data/catalog.js` (tabel `PRODUCTS`). Contohnya: `signature-blend`, `premium-blend`, `delightful-blend`, `blend-175`, `bali-kintamani`, `gayo-highland`, `java-cikuray`, `robusta-gayo`, `luwak-liar-gayo`, `luwak-liar-gayo-luxury-box`.
+
+---
+
+## Daftar Harga (Pricelist 2026 + Rp20.000)
+Harga jual = harga di pricelist + **Rp20.000** (keuntungan). **Sachet tidak ditambah** (tetap Rp15.000, min. order 5).
+
+| Kategori | Varian | Contoh (modal → jual) |
+|---|---|---|
+| Espresso Based (4 blend) | 100g / 250g / 1kg | Signature Blend 250g: 107.000 → **127.000** |
+| Single Origin Arabika (20 origin) | 100g / 200g / 1kg | Gayo Highland 200g: 92.000 → **112.000** |
+| Robusta (4) | 100g / 250g / 1kg | Robusta Gayo 250g: 85.000 → **105.000** |
+| Limited Edition | Luwak Liar Gayo 100g / 1kg | 190.000 → **210.000** · 1.899.000 → **1.919.000** |
+| Limited Edition | Luwak Liar Gayo Luxury Box / Box+ | 360.000 → **380.000** · 610.000 → **630.000** |
+| Sachet (11 produk) | Sachet | **Rp15.000** (tanpa margin) |
+
+### Harga Coret
+- Diatur di `STRIKE_PRICE` (`src/data/catalog.js`)
+- Rumus: `harga coret = harga jual + persen%`, lalu dibulatkan ke atas per Rp5.000. Untuk sachet dibulatkan per Rp1.000
+- Persen default: Espresso & Single Origin 20%, Robusta 18%, Limited 15%, Sachet 20%
+- Harga coret bisa diatur manual per varian lewat `overrides`, contohnya `'gayo-wine:200g': 185000`. Isi `0` untuk menyembunyikan harga coret varian itu
+- Matikan semua harga coret dengan `enabled: false`
+- Tampil di kartu produk (badge "Hemat X%"), halaman detail ("Promo — hemat RpX"), pilihan ukuran, ringkasan checkout ("Kamu hemat"), dan pita promo di hero
+
+---
+
+## Pembayaran & Supabase
+Pembayaran **tidak lagi otomatis sukses**. Alurnya:
+
+1. Pembeli mengisi data, memilih GoPay QRIS atau VA BSI, lalu klik **Saya Sudah Bayar**
+2. Pesanan disimpan ke Supabase dengan status **`waiting_verification`** (Menunggu Verifikasi)
+3. Admin mengecek mutasi rekening, lalu di Supabase mengubah `payment_status` menjadi:
+   - `paid` → halaman pembeli otomatis berubah menjadi **Pembayaran Diterima**
+   - `rejected` (isi juga `admin_note`) → tampil **Pembayaran Ditolak** beserta catatannya
+4. Halaman pembeli mengecek status sendiri setiap 15 detik. Ada juga tombol **Cek status sekarang**
+
+### Setup Supabase (sekali saja)
+1. Buka Supabase Dashboard → **SQL Editor** → **New query**
+2. Paste seluruh isi `supabase/schema.sql`, lalu klik **Run**. File ini aman dijalankan berulang kali
+3. Ambil **Project URL** dan **anon public key** di Project Settings → API
+4. Isi environment variable:
+   - Lokal: salin `.env.example` menjadi `.env`
+   - Cloudflare Pages: Settings → Environment variables
+   ```
+   VITE_SUPABASE_URL=https://xxxx.supabase.co
+   VITE_SUPABASE_ANON_KEY=eyJ...
+   ```
+5. Build/deploy ulang. Variabel `VITE_` dibaca saat build
+
+Jika env belum diisi, checkout tetap jalan dengan status "Menunggu Verifikasi" yang hanya tersimpan di browser, dan verifikasi dilakukan lewat WhatsApp.
+
+### Isi database (`supabase/schema.sql`)
+- **`orders`**: kode pesanan, data pembeli, metode bayar, subtotal, ongkir, total, `payment_status` (`unpaid` / `waiting_verification` / `paid` / `rejected` / `refunded`), `order_status` (`new` / `processing` / `shipped` / `completed` / `cancelled`), no. resi, catatan admin, `paid_at`
+- **`order_items`**: produk, varian, harga, harga coret, jumlah, subtotal
+- **RPC `create_order`**: dipanggil website. Memvalidasi input, menghitung ulang subtotal di server, dan aman terhadap klik ganda
+- **RPC `get_order_status`**: cek status. Wajib kode pesanan + no. telepon yang cocok
+- **Trigger**: `updated_at` otomatis. Saat status menjadi `paid`, `paid_at` terisi dan `order_status` berubah ke `processing`. `total = subtotal + ongkir`
+- **Keamanan (RLS)**: pengunjung tidak bisa membaca atau mengubah tabel secara langsung, hanya lewat 2 RPC di atas
+- **View `admin_orders_overview`**: ringkasan pesanan untuk admin
+- Di bagian bawah file ada contoh query admin (verifikasi, tolak, isi ongkir/resi)
+
+Skema ini sudah diuji di PostgreSQL 17 dengan role `anon`, sama seperti di Supabase: buat order, klik ganda, cek status, akses tabel ditolak, dan admin set `paid`.
+
+---
+
+## Fitur Utama
+### Homepage
+- **Navbar**: menu benar-benar di tengah layar (grid 3 kolom), pill aktif, mengecil saat scroll, progress bar scroll, badge keranjang beranimasi saat item bertambah, menu HP full-screen dengan animasi
+- **Hero**: judul muncul per kata, teks "Exceptional" berkilau, biji kopi melayang, blob latar bergerak, uap kopi, efek tilt mengikuti mouse, angka statistik menghitung naik, kartu produk mengambang
+- **Pita promo berjalan** di bawah hero
+- Featured Coffee, About, Why Choose Us, Testimonials (auto-scroll), CTA (zoom pelan / ken-burns), Footer
+- **Tombol WhatsApp mengambang** dengan gelembung sapaan + tombol kembali ke atas
+
+### All Coffee (`#/coffee`)
+- 4 kategori: Espresso Based · Single Origin · Robusta · Limited Edition
+- Filter ukuran (Sachet / 100g / 200g / 250g / 1kg), pencarian, toolbar sticky
+- Kartu produk: animasi mengambang, kilau saat hover, badge Best Seller & Hemat X%, harga coret
 
 ### Product Detail (`#/coffee/:id`)
-- Breadcrumb Home › All Coffee › Kategori › Produk
-- Gambar kemasan besar dan thumbnail per varian ukuran
-- **Pilihan varian ukuran** dalam bentuk kartu, hanya ukuran yang tersedia untuk produk tersebut, masing-masing dengan harga
-- **Aturan minimal 5 sachet**: jika jumlah sachet di bawah 5, muncul tulisan kecil berwarna merah "Sachet wajib pesan minimal 5 sachet — tambah N lagi" dan tombol Add to Bag dinonaktifkan sampai jumlahnya mencapai 5
-- Pengatur jumlah dan tombol **Add to Bag** (keranjang tersimpan di localStorage, muncul notifikasi toast)
-- Tasting profile (roast level, flavor notes, metode seduh), spesifikasi (asal, ketinggian, proses, varietas), deskripsi lengkap
-- Rekomendasi "You May Also Like" dari kategori yang sama
+- Pilihan ukuran lengkap dengan harga & harga coret, aturan minimal 5 sachet
+- **Bar "Add to Bag" menempel di bawah layar HP**
 
-### Homepage — Testimonials & Footer
-- **Hero**: judul "Discover the Art of Exceptional Coffee." memakai satu gaya tulisan yang sama (tanpa italic)
-- **Navbar**: menu Home · Shop · About · **Testimonials** · Contact. Ikon tas membuka halaman Checkout
-- **Testimonials** (`src/sections/Testimonials.jsx`, `#testimonials`): 2 baris kartu yang **bergeser otomatis** (bukan manual): **baris atas ke kanan**, **baris bawah ke kiri**. Loop tanpa jeda dan berhenti sebentar saat di-hover. Animasinya digerakkan `requestAnimationFrame`, jadi tetap jalan walaupun pengaturan reduced-motion di perangkat aktif. Data ada di `testimonials` di `src/data/content.js`
-- **Footer**:
-  - Customer Center (lokasi): Jl. Bali Raya No. 49, Kelurahan Makasar, Kecamatan Cipinang Melayu, Jakarta Timur, DKI Jakarta, Indonesia (link ke Google Maps)
-  - WhatsApp: +6287797890306 dan +6285772196163, langsung membuka chat `wa.me` dengan pesan pembuka
-  - Instagram: @nook.coffeeboutique
-  - Data kontak ada di `contact` di `src/data/content.js`
+### Checkout (`#/checkout`)
+- Stepper 3 langkah yang **simetris & di tengah**: Data → Bayar → Verifikasi, dengan garis progres beranimasi
+- GoPay QRIS & VA BSI, pop-up pembayaran, struk PNG, kirim ke WhatsApp
+- Step 3 menampilkan status: Menunggu Verifikasi / Diterima / Ditolak
 
-### Payment / Checkout (`#/checkout`) — 3 Step
-- **Step 1 · Data Pengiriman**: nama lengkap, email, no. telepon, dan alamat pengiriman wajib diisi dan divalidasi. Jumlah barang di keranjang masih bisa diubah atau dihapus di Ringkasan Pesanan
-- **Step 2 · Metode Pembayaran**: ada 2 pilihan, masing-masing dengan panduan cara bayar:
-  - **GoPay Merchant (QRIS)**: merchant MUHAMMAD FIKRI AL HAIDAR, NMID ID1026501174977 (QR: `public/static/images/qris-gopay.png`, sudah di-crop)
-  - **VA BSI**: no. rekening **7268050897** (ada tombol salin)
-  - Klik **Bayar Sekarang** untuk membuka **pop-up pembayaran** berisi total, QRIS (bisa diunduh) atau nomor rekening BSI, langkah bayar, dan kotak centang konfirmasi sebelum tombol **Saya Sudah Bayar** aktif
-- **Step 3 · Selesai**: ringkasan pesanan (No. Pesanan `NOOK-YYYYMMDD-XXXX`), tombol **Download Struk** (file PNG dibuat di browser lewat canvas), dan tombol **Kirim ke WhatsApp** ke **6287797890306** dengan pesan detail pesanan yang sudah terisi otomatis. Pembeli wajib mengirim struk ini beserta bukti transfer
-- Tidak ada simulasi bayar sukses atau gagal. Verifikasi pembayaran dilakukan manual oleh admin lewat WhatsApp
-- Konfigurasi pembayaran (rekening, merchant, nomor WA, langkah bayar) ada di `payment` di `src/data/content.js`
+### Optimasi HP
+- Tidak ada scroll horizontal (dicek di lebar 390px), padding & ukuran font disesuaikan
+- Input 16px agar iOS tidak auto-zoom, mendukung safe-area untuk iPhone, modal memakai `dvh`
+- Tombol penuh lebar di HP, tab/filter bisa digeser
+- Animasi tetap jalan walau mode hemat baterai menyalakan "reduced motion"
 
-## Entry URIs
-| Path | Keterangan |
-|---|---|
-| `/` atau `/#home` | Homepage (`#brand-intro`, `#featured-coffee`, `#why-choose-us`, `#site-footer` = anchor section) |
-| `/#/coffee` | All Coffee / Product Catalog |
-| `/#/coffee?category=khas-nusantara\|kopi-luwak\|robusta` | Catalog dengan filter kategori |
-| `/#/coffee?size=sachet\|150g\|250g` | Catalog dengan ukuran default |
-| `/#/coffee?q=luwak` | Catalog dengan kata kunci pencarian |
-| `/#/coffee/:id?size=150g` | Product Detail, misalnya `/#/coffee/aceh-gayo?size=150g` |
-| `/#/checkout` | Payment 3 step (Data Pengiriman → Metode Pembayaran → Selesai) |
-| `/#testimonials` | Section Testimonials di homepage |
-
-## Data Architecture
-- **Data produk**: data statis di `src/data/catalog.js`, terdiri dari `categories`, `variants`, dan `catalog` (27 produk, dibangun otomatis dari tabel `PRICES`, `AVAILABILITY`, dan `PROFILES`). Untuk menambah atau menghapus origin di suatu ukuran, cukup edit daftar id di `AVAILABILITY`. Setiap produk punya `category`, `bean`, `prices` (hanya ukuran yang tersedia), `notes`, `roast`, `process`, `altitude`, `varietal`, `brew`, dan `description`
-- **Keranjang**: React context (`src/context/CartContext.jsx`) yang disimpan di `localStorage` (`nook-cart-v1`)
-- **Routing**: hash router ringan (`src/hooks/useHashRoute.js`), tanpa dependency tambahan
-- **Checkout**: data pemesan (`nook-checkout-customer`) dan pesanan terakhir (`nook-last-order`) disimpan di `localStorage`. Struk dibuat di browser (`src/utils/receipt.js`)
-- Tidak ada backend atau database. Pembayaran diverifikasi manual via WhatsApp
-
-## Struktur Kode
+## Struktur Folder
 ```
 src/
-├── App.jsx                    # Router: Home / Catalog / Detail / Checkout
-├── data/content.js            # Brand, nav, featured products, features
-├── data/catalog.js            # Harga, ketersediaan per ukuran, profil rasa (27 produk)
-├── hooks/useHashRoute.js      # Hash router + sinkronisasi query string
-├── context/CartContext.jsx    # State keranjang + toast
-├── pages/CatalogPage.jsx      # Halaman All Coffee
-├── pages/ProductDetailPage.jsx
-├── pages/CheckoutPage.jsx     # Payment 3 step + pop-up pembayaran
-├── utils/receipt.js           # Generator struk PNG + link WhatsApp
-├── components/                # Button, Logo, Icon, CoffeeBag, ProductCard,
-│                              # CatalogCard, VariantSelector, Toast, dll.
-└── sections/                  # Navbar, Hero, BrandIntro, FeaturedCoffee, ...
+  data/catalog.js        ← produk, harga, margin, harga coret
+  data/productImages.js  ← gambar produk
+  data/content.js        ← brand, kontak, pembayaran, testimoni
+  lib/supabase.js        ← koneksi Supabase (RPC)
+  pages/                 ← CatalogPage, ProductDetailPage, CheckoutPage
+  sections/              ← Navbar, Hero, Footer, dll.
+  components/            ← PriceTag, ProductVisual, FloatingActions, dll.
+supabase/schema.sql      ← SQL untuk Supabase
+public/static/images/    ← gambar (products/ untuk foto produk)
 ```
-
-## Design System
-- **Colors**: `coffee` #3B2418 · `cream` #E8DCC8 · `beige` #F5F0E8 · white
-- **Fonts**: Montserrat (heading) · Poppins (body)
-- **Motion**: hover halus, fade-up saat scroll, mendukung `prefers-reduced-motion`
-
-## User Guide
-1. Di homepage, klik **View All Coffee** (atau menu **Shop**)
-2. Pilih kategori lewat tab, ubah ukuran lewat selector **Size**, atau ketik di kolom pencarian
-3. Klik **View Detail** pada produk, pilih ukuran dan jumlah, lalu klik **Add to Bag**
-4. Klik **Lanjut ke Pembayaran** (atau ikon tas di navbar) → isi data pengiriman → pilih GoPay/BSI → **Bayar Sekarang** → bayar → **Saya Sudah Bayar**
-5. Di Step 3, klik **Download Struk** lalu **Kirim ke WhatsApp** (6287797890306) beserta bukti transfer
 
 ## Development
 ```bash
-npm run build                    # build ke dist/
-pm2 start ecosystem.config.cjs   # serve dist/ di port 3000 (wrangler pages dev)
-npm run dev                      # Vite dev server (mesin lokal)
+npm install
+npm run build
+npx wrangler pages dev dist --ip 0.0.0.0 --port 3000   # atau: pm2 start ecosystem.config.cjs
 ```
 
-## Belum Diimplementasikan / Next Steps
-- Halaman About dan Contact terpisah
-- Verifikasi pembayaran otomatis (payment gateway/webhook) dan penyimpanan pesanan di D1
-- Perhitungan ongkos kirim otomatis
-- Pilihan grind (whole bean / ground) dan sorting harga di catalog
-- Foto produk asli (sekarang kemasan berupa ilustrasi SVG yang konsisten)
-- Mengganti handle Instagram dan nomor WhatsApp placeholder
-- Deploy ke production
+## Belum Dikerjakan / Saran Berikutnya
+- Panel admin di website untuk verifikasi pembayaran (saat ini lewat Supabase Dashboard)
+- Ongkir otomatis (RajaOngkir / Biteship)
+- Notifikasi email/WA otomatis saat status berubah menjadi `paid`
+- Upload bukti transfer langsung ke Supabase Storage
+- Deploy ke Cloudflare Pages + custom domain nookcoffeeboutique.my.id
 
 ## Deployment
 - **Platform**: Cloudflare Pages (static)
-- **Status**: Preview di sandbox, belum di-deploy ke production
-- **Tech Stack**: React 19 + Tailwind CSS v4 + Vite
-- **Last Updated**: 2026-11-04
+- **Status**: ❌ Belum di-deploy
+- **Last Updated**: 5 November 2026

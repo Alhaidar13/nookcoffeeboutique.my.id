@@ -5,7 +5,7 @@ import { features } from '../data/content.js'
 
 export default function WhyChooseUs() {
   return (
-    <section id="why-choose-us" className="bg-beige py-24 sm:py-32">
+    <section id="why-choose-us" className="bg-beige pb-20 pt-4 sm:pb-32 sm:pt-8">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <Reveal>
           <SectionHeading
@@ -15,9 +15,9 @@ export default function WhyChooseUs() {
           />
         </Reveal>
 
-        <div className="mt-16 grid gap-6 md:grid-cols-3 lg:gap-8">
+        <div className="mt-10 grid gap-5 sm:mt-16 md:grid-cols-3 lg:gap-8">
           {features.map((f, i) => (
-            <Reveal key={f.title} delay={i * 100} className="h-full">
+            <Reveal key={f.title} delay={i * 120} variant="zoom" className="h-full">
               <FeatureItem index={i + 1} {...f} />
             </Reveal>
           ))}

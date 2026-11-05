@@ -11,7 +11,7 @@ export default function SectionHeading({ eyebrow, title, subtitle, align = 'cent
           {eyebrow}
         </span>
       )}
-      <h2 className={`text-3xl font-semibold leading-tight tracking-tight sm:text-4xl lg:text-[2.75rem] ${titleColor}`}>
+      <h2 className={`text-[1.85rem] font-semibold leading-tight tracking-tight sm:text-4xl lg:text-[2.75rem] ${titleColor}`}>
         {title}
       </h2>
       {subtitle && <p className={`mt-4 text-base leading-relaxed sm:text-lg ${mutedColor}`}>{subtitle}</p>}

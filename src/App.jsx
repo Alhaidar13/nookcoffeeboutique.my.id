@@ -11,6 +11,7 @@ import CatalogPage from './pages/CatalogPage.jsx'
 import ProductDetailPage from './pages/ProductDetailPage.jsx'
 import CheckoutPage from './pages/CheckoutPage.jsx'
 import Toast from './components/Toast.jsx'
+import FloatingActions from './components/FloatingActions.jsx'
 import useHashRoute from './hooks/useHashRoute.js'
 import { CartProvider } from './context/CartContext.jsx'
 import { brand } from './data/content.js'
@@ -61,7 +62,8 @@ export default function App() {
         {route.page === 'home' && <HomePage />}
       </main>
       <Footer />
-      <Toast />
+      <FloatingActions hideOnMobile={route.page === 'detail' || route.page === 'checkout'} />
+      <Toast raised={route.page === 'detail'} />
     </CartProvider>
   )
 }
