@@ -11,7 +11,7 @@ export default function ProductVisual({ product, variant, weight, className = ''
         src={src}
         alt={`${product.name}${weight ? ` ${weight}` : ''}`}
         loading="lazy"
-        className={`relative mx-auto h-full w-full object-cover ${imgClassName}`}
+        className={`relative mx-auto h-full w-full object-contain mix-blend-multiply ${imgClassName}`}
       />
     )
   }
