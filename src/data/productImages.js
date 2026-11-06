@@ -10,8 +10,8 @@
 //
 //  - Produk yang TIDAK terdaftar di sini otomatis memakai ilustrasi
 //    kemasan kopi (SVG) dengan nama produknya.
-//  - Bisa juga per-varian ukuran:  'gayo-highland:1kg': '/static/...'
-//    (varian lebih diprioritaskan daripada gambar umum produk)
+//  - Foto didaftarkan PER VARIAN dengan format 'id-produk:ukuran',
+//    contoh: 'gayo-highland:200g': '/static/...'. Varian tanpa foto memakai ilustrasi default.
 //  - Daftar id produk ada di src/data/catalog.js (tabel PRODUCTS),
 //    contoh: signature-blend, gayo-highland, java-cikuray, robusta-gayo,
 //    luwak-liar-gayo, luwak-liar-gayo-luxury-box, dst.
@@ -41,22 +41,6 @@ export const PRODUCT_IMAGES = {
   'flores-manggarai:100g': '/static/images/products/flores-manggarai-100g.webp',
   'gayo-highland:100g': '/static/images/products/gayo-highland-100g.webp',
 
-  // --- Foto umum produk (dipakai untuk varian lain, mis. 1kg / sachet) ---
-  'java-cikuray': '/static/images/products/java-cikuray-200g.webp',
-  'java-ijen': '/static/images/products/java-ijen-200g.webp',
-  'java-malabar': '/static/images/products/java-malabar-200g.webp',
-  'java-papandayan': '/static/images/products/java-papandayan-200g.webp',
-  'java-temanggung': '/static/images/products/java-temanggung-200g.webp',
-  'kerinci': '/static/images/products/kerinci-200g.webp',
-  'toraja-sapan': '/static/images/products/toraja-sapan-200g.webp',
-  'bali-kintamani': '/static/images/products/bali-kintamani-200g.webp',
-  'flores-bajawa': '/static/images/products/flores-bajawa-200g.webp',
-  'lintong': '/static/images/products/lintong-200g.webp',
-  'papua-wamena': '/static/images/products/papua-wamena-200g.webp',
-  'sidikalang': '/static/images/products/sidikalang-200g.webp',
-  'flores-manggarai': '/static/images/products/flores-manggarai-100g.webp',
-  'gayo-highland': '/static/images/products/gayo-highland-100g.webp',
-
   // Foto tersedia tapi produk belum ada di katalog:
   // 'robusta-dampit': '/static/images/products/dampit-200g.webp',
 }
@@ -64,4 +48,6 @@ export const PRODUCT_IMAGES = {
 // Gambar latar per kategori (dipakai di header kategori & latar kartu)
 // diatur di src/data/catalog.js -> categories[].image
 
-export const productImage = (id, variant) => PRODUCT_IMAGES[`${id}:${variant}`] || PRODUCT_IMAGES[id] || null
+// Hanya foto per-varian yang dipakai. Varian tanpa foto (mis. sachet, 1kg, atau ukuran
+// yang belum difoto) otomatis memakai ilustrasi kemasan default.
+export const productImage = (id, variant) => PRODUCT_IMAGES[`${id}:${variant}`] || null
