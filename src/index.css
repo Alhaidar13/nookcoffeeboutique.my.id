@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+@theme {
+  --color-coffee: #3B2418;
+  --color-coffee-light: #5a3a29;
+  --color-cream: #E8DCC8;
+  --color-beige: #F5F0E8;
+  --font-heading: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply bg-beige font-body text-coffee antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-heading;
+  }
+  ::selection {
+    @apply bg-coffee text-cream;
+  }
+}
+
+/* Reduced motion: hanya smooth-scroll & parallax yang dimatikan.
+   Animasi dekoratif ringan tetap jalan (banyak HP Android menyalakan
+   setting ini otomatis di mode hemat baterai -> website jadi terasa "mati"). */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+/* Subtle reveal-on-scroll (used sparingly) */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.9s var(--ease-soft), transform 0.9s var(--ease-soft);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Testimonials auto-scrolling marquee — driven by JS (requestAnimationFrame)
+   so it always moves automatically, even when the OS has reduced motion on. */
+.marquee {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 1.5rem;
+  will-change: transform;
+}
+
+/* Checkout */
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+.modal-panel { animation: modal-in 0.35s var(--ease-soft); }
+
+/* =====================================================================
+   ANIMASI — membuat website terasa lebih hidup
+   ===================================================================== */
+@keyframes float-y { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-10px) rotate(-1deg); } }
+@keyframes shine-sweep { 0% { transform: translateX(-120%) skewX(-20deg); } 100% { transform: translateX(220%) skewX(-20deg); } }
+@keyframes badge-pulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.45); } 50% { transform: scale(1.06); box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); } }
+@keyframes pop-in { 0% { opacity: 0; transform: scale(0.85); } 60% { transform: scale(1.04); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes step-pulse { 0% { box-shadow: 0 0 0 0 rgba(59, 36, 24, 0.35); } 100% { box-shadow: 0 0 0 12px rgba(59, 36, 24, 0); } }
+@keyframes cart-bump { 0% { transform: scale(1); } 30% { transform: scale(1.25) rotate(-8deg); } 60% { transform: scale(0.95) rotate(4deg); } 100% { transform: scale(1); } }
+@keyframes steam { 0% { opacity: 0; transform: translateY(10px) scaleX(1); } 30% { opacity: 0.7; } 100% { opacity: 0; transform: translateY(-40px) scaleX(1.6); } }
+@keyframes bean-drift { 0% { transform: translate3d(0, 0, 0) rotate(0); } 50% { transform: translate3d(14px, -22px, 0) rotate(160deg); } 100% { transform: translate3d(0, 0, 0) rotate(360deg); } }
+@keyframes gradient-pan { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes word-in { from { opacity: 0; transform: translateY(0.6em) rotate(2deg); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes blob { 0%, 100% { border-radius: 42% 58% 60% 40% / 45% 45% 55% 55%; transform: rotate(0); } 50% { border-radius: 58% 42% 38% 62% / 58% 38% 62% 42%; transform: rotate(12deg); } }
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+
+.bag-float { animation: float-y 5s ease-in-out infinite; }
+li:nth-child(2n) .bag-float { animation-delay: -1.5s; }
+li:nth-child(3n) .bag-float { animation-delay: -3s; }
+
+.shine { overflow: hidden; }
+.shine::after {
+  content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: translateX(-120%) skewX(-20deg);
+}
+.group:hover .shine::after { animation: shine-sweep 0.9s ease-out; }
+
+.badge-pulse { animation: badge-pulse 2.2s ease-in-out infinite; }
+.pop-in { animation: pop-in 0.55s var(--ease-soft) both; }
+.fade-up { animation: fade-up 0.6s var(--ease-soft) both; }
+.step-pulse { animation: step-pulse 1.6s ease-out infinite; }
+.cart-bump { animation: cart-bump 0.6s ease-out; }
+.spin-slow { animation: spin-slow 6s linear infinite; }
+
+.steam span { position: absolute; bottom: 0; width: 8px; height: 34px; border-radius: 999px; background: linear-gradient(to top, rgba(232, 220, 200, 0.75), transparent); filter: blur(3px); animation: steam 3s ease-out infinite; }
+.steam span:nth-child(2) { left: 14px; animation-delay: 0.8s; }
+.steam span:nth-child(3) { left: 28px; animation-delay: 1.6s; }
+
+.bean-drift { animation: bean-drift 14s ease-in-out infinite; }
+.blob { animation: blob 12s ease-in-out infinite; }
+
+.text-shimmer {
+  background: linear-gradient(90deg, #3B2418 0%, #8a5a3c 25%, #3B2418 50%, #8a5a3c 75%, #3B2418 100%);
+  background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: gradient-pan 6s linear infinite;
+}
+
+.ticker-track { display: flex; width: max-content; animation: ticker 28s linear infinite; }
+.ticker:hover .ticker-track { animation-play-state: paused; }
+
+.word-in { display: inline-block; animation: word-in 0.8s var(--ease-soft) both; }
+
+/* reveal varian */
+.reveal.reveal-left { transform: translateX(-28px); }
+.reveal.reveal-right { transform: translateX(28px); }
+.reveal.reveal-zoom { transform: scale(0.94); }
+.reveal.is-visible.reveal-left, .reveal.is-visible.reveal-right, .reveal.is-visible.reveal-zoom { transform: none; }
+
+/* tombol kembali ke atas & WA mengambang */
+.fab { transition: transform 0.35s var(--ease-soft), opacity 0.35s var(--ease-soft); }
+
+/* =====================================================================
+   MOBILE
+   ===================================================================== */
+@layer base {
+  html { -webkit-text-size-adjust: 100%; overflow-x: hidden; }
+  body { overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+  input, textarea, select { font-size: 16px; } /* cegah auto-zoom di iOS */
+  @media (min-width: 640px) { input, textarea, select { font-size: inherit; } }
+}
+@media (max-width: 639px) {
+  html { scroll-padding-top: 4.5rem; }
+  .marquee { -webkit-mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent); mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent); }
+}
+
+@keyframes ken-burns { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12) translate(-2%, -1%); } }
+.ken-burns { animation: ken-burns 18s ease-in-out infinite; }
